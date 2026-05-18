@@ -1,51 +1,65 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-import { useCart } from '@/context/CartContext';
-import { ShoppingCartIcon, UserIcon } from '@heroicons/react/24/outline';
+import { ShoppingBag, Search, User } from 'lucide-react';
+import { useCartStore } from '@/lib/store/cartStore';
+import { Container } from '../ui/Container';
 
-export default function Header() {
-  const { user, logout } = useAuth();
-  const { cart } = useCart();
-  const itemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+export function Header() {
+  const { setIsOpen, items } = useCartStore();
+  
+  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-          Lumina
-        </Link>
-
-        <nav className="hidden md:flex gap-6">
-          <Link href="/products" className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors">Catálogo</Link>
-          {user?.role === 'ROLE_ADMIN' && (
-            <Link href="/admin" className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors">Admin</Link>
-          )}
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <Link href="/cart" className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors">
-            <ShoppingCartIcon className="w-6 h-6" />
-            {itemCount > 0 && (
-              <span className="absolute top-0 right-0 bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {itemCount}
-              </span>
-            )}
+    <header className="sticky top-0 z-30 w-full bg-ivory/80 backdrop-blur-md border-b border-graphite/10">
+      <Container>
+        <div className="flex items-center justify-between h-16 md:h-20">
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <h1 className="font-serif text-2xl font-bold tracking-tighter text-obsidian">
+              LUXE
+            </h1>
           </Link>
-          
-          {user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm hidden sm:block text-gray-600 dark:text-gray-300">Olá, {user.name}</span>
-              <button onClick={logout} className="text-sm text-red-500 hover:text-red-600">Sair</button>
-            </div>
-          ) : (
-            <Link href="/login" className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors">
-              <UserIcon className="w-6 h-6" />
+
+          {/* Navigation - Hidden on mobile */}
+          <nav className="hidden md:flex items-center gap-8">
+            <Link href="/products" className="text-sm font-medium text-graphite hover:text-obsidian transition-colors">
+              New Arrivals
             </Link>
-          )}
+            <Link href="/products" className="text-sm font-medium text-graphite hover:text-obsidian transition-colors">
+              Perfumes
+            </Link>
+            <Link href="/products" className="text-sm font-medium text-graphite hover:text-obsidian transition-colors">
+              Skincare
+            </Link>
+            <Link href="/products" className="text-sm font-medium text-graphite hover:text-obsidian transition-colors">
+              Collections
+            </Link>
+          </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-4">
+            <button className="p-2 text-obsidian hover:text-graphite transition-colors">
+              <Search size={20} />
+            </button>
+            <button className="hidden md:block p-2 text-obsidian hover:text-graphite transition-colors">
+              <User size={20} />
+            </button>
+            <button 
+              className="relative p-2 text-obsidian hover:text-graphite transition-colors"
+              onClick={() => setIsOpen(true)}
+            >
+              <ShoppingBag size={20} />
+              {totalItems > 0 && (
+                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-obsidian text-[10px] font-bold text-ivory">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
+      </Container>
     </header>
   );
 }

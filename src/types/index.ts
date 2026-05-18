@@ -1,70 +1,32 @@
 export interface Category {
-  id: string;
+  id: number;
   name: string;
   slug: string;
-  parentId: string | null;
-}
-
-export interface VariantAttribute {
-  name: string;
-  options: string[];
+  description: string;
 }
 
 export interface Variant {
   id: string;
   sku: string;
+  name: string;
   price: number;
-  stockQuantity: number;
-  attributes: VariantAttribute[];
+  stock: number;
 }
 
 export interface Product {
   id: string;
-  title: string;
+  name: string;
   slug: string;
   description: string;
   basePrice: number;
-  imageUrl: string;
-  category: Category | null;
+  promotionalPrice?: number;
+  images: string[];
+  category: Category;
   variants: Variant[];
 }
 
-export interface User {
-  name: string;
-  email: string;
-  role: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
 export interface CartItem {
-  variantId: string;
-  productTitle: string;
-  sku: string;
-  price: number;
+  product: Product;
+  variant: Variant;
   quantity: number;
-  imageUrl: string;
-}
-
-export interface OrderItem {
-  id: string;
-  productTitle: string;
-  variantSku: string;
-  quantity: number;
-  unitPrice: number;
-}
-
-export interface Order {
-  id: string;
-  subtotal: number;
-  total: number;
-  status: string;
-  createdAt: string;
-  paymentInitPoint: string | null;
-  items: OrderItem[];
 }

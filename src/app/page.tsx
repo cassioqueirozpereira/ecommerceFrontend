@@ -1,75 +1,158 @@
+import React from 'react';
 import Link from 'next/link';
+import { Container } from '@/components/ui/Container';
+import { Button } from '@/components/ui/Button';
+import { getProducts } from '@/lib/api';
 
-export const metadata = {
-  title: 'Lumina | E-commerce Premium',
-  description: 'Descubra a nova coleção com a melhor experiência de compras online.',
-};
+// Forcing this page to revalidate every hour or rely on ISR
+export const revalidate = 3600;
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch featured products server-side
+  const products = await getProducts();
+  const featuredProducts = products.slice(0, 4);
+
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
-      {/* Hero Section */}
-      <section className="relative flex-1 flex items-center justify-center overflow-hidden bg-slate-900 text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/50 to-slate-900/80 z-10" />
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop")' }}
-        />
+    <>
+      {/* Hero Section - Midnight Luxe Preset B */}
+      <section className="relative h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-obsidian text-ivory">
+        {/* Abstract dark luxury background placeholder */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/80 to-transparent z-10" />
+          <img 
+            src="https://images.unsplash.com/photo-1615397323924-4f8ce91001e3?q=80&w=2000&auto=format&fit=crop" 
+            alt="Luxury abstract background" 
+            className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
+          />
+        </div>
         
-        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-            Elegância em cada <span className="text-primary-400">Detalhe</span>
+        <Container className="relative z-20 text-center flex flex-col items-center">
+          <span className="text-champagne tracking-[0.2em] text-sm md:text-base font-medium mb-6 uppercase">
+            A Nova Era da Beleza
+          </span>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tighter mb-6 max-w-4xl text-balance">
+            Oceano noturno <br/>
+            <span className="italic font-light">encontra a precisão.</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto font-light">
-            Explore nossa nova coleção projetada para quem valoriza design, conforto e exclusividade.
+          <p className="text-ivory/70 text-lg md:text-xl max-w-xl mx-auto mb-10 font-light">
+            Descubra nossa nova coleção de fragrâncias exclusivas desenhadas para deixar uma marca inesquecível.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/products" 
-              className="px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white rounded-full font-medium text-lg transition-all transform hover:scale-105 shadow-lg shadow-primary-500/30"
-            >
-              Explorar Coleção
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <Link href="/products?category=perfume" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full bg-champagne text-obsidian hover:bg-ivory hover:text-obsidian">
+                Explorar Fragrâncias
+              </Button>
+            </Link>
+            <Link href="/products" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full border-ivory/30 text-ivory hover:bg-ivory/10">
+                Ver Tudo
+              </Button>
             </Link>
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 bg-white dark:bg-gray-950">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-            <div className="p-6 rounded-2xl bg-gray-50 dark:bg-gray-900 hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 mx-auto bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-2xl flex items-center justify-center mb-6">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-3 dark:text-white">Qualidade Premium</h3>
-              <p className="text-gray-600 dark:text-gray-400">Materiais selecionados com o mais alto padrão de qualidade do mercado.</p>
+      {/* Featured Products Section */}
+      <section className="py-24 bg-ivory text-obsidian">
+        <Container>
+          <div className="flex justify-between items-end mb-12">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-serif tracking-tight">Destaques</h2>
+              <p className="text-graphite mt-2">Nossas curadorias mais exclusivas.</p>
             </div>
+            <Link href="/products" className="hidden md:inline-flex text-sm font-medium hover:text-champagne transition-colors pb-1 border-b border-obsidian hover:border-champagne">
+              Ver Coleção Completa
+            </Link>
+          </div>
 
-            <div className="p-6 rounded-2xl bg-gray-50 dark:bg-gray-900 hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 mx-auto bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-2xl flex items-center justify-center mb-6">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-3 dark:text-white">Envio Expresso</h3>
-              <p className="text-gray-600 dark:text-gray-400">Entregas rápidas e seguras para todo o Brasil com rastreamento em tempo real.</p>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {featuredProducts.map((product) => (
+                <Link key={product.id} href={`/product/${product.slug}`} className="group flex flex-col">
+                  <div className="aspect-[4/5] bg-graphite/5 rounded-md overflow-hidden mb-4 relative">
+                    {product.images?.[0] ? (
+                      <img 
+                        src={product.images[0]} 
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-graphite/30">
+                        No Image
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-obsidian/0 group-hover:bg-obsidian/5 transition-colors duration-300" />
+                  </div>
+                  <h3 className="font-medium text-lg leading-tight group-hover:text-champagne transition-colors">
+                    {product.name}
+                  </h3>
+                  <p className="text-sm text-graphite mt-1">{product.category?.name || 'Skincare'}</p>
+                  <p className="font-serif mt-2">${product.basePrice.toFixed(2)}</p>
+                </Link>
+              ))}
             </div>
-
-            <div className="p-6 rounded-2xl bg-gray-50 dark:bg-gray-900 hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 mx-auto bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-2xl flex items-center justify-center mb-6">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[4/5] bg-graphite/10 rounded-md mb-4" />
+                  <div className="h-5 bg-graphite/10 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-graphite/10 rounded w-1/2" />
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <div className="mt-12 text-center md:hidden">
+            <Link href="/products">
+              <Button variant="outline" size="full">Ver Coleção Completa</Button>
+            </Link>
+          </div>
+        </Container>
+      </section>
+      
+      {/* Editorial/Bento Grid Section for Conversions */}
+      <section className="py-24 bg-graphite text-ivory">
+        <Container>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[600px]">
+            <Link href="/products?category=perfume" className="group relative rounded-lg overflow-hidden h-[400px] md:h-auto">
+              <img 
+                src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?q=80&w=1000&auto=format&fit=crop" 
+                alt="Perfumes" 
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-obsidian/90 via-obsidian/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-8 md:p-12">
+                <h3 className="font-serif text-3xl mb-2">Essência</h3>
+                <p className="text-ivory/70 mb-4 max-w-sm">Perfumes que redefinem a sofisticação moderna.</p>
+                <span className="inline-block border-b border-champagne text-champagne pb-1">Comprar Perfumes</span>
               </div>
-              <h3 className="text-xl font-bold mb-3 dark:text-white">Compra Segura</h3>
-              <p className="text-gray-600 dark:text-gray-400">Pagamento criptografado e garantia de devolução em até 30 dias.</p>
+            </Link>
+            <div className="grid grid-rows-2 gap-4">
+              <Link href="/products?category=skincare" className="group relative rounded-lg overflow-hidden h-[300px] md:h-auto">
+                <img 
+                  src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1000&auto=format&fit=crop" 
+                  alt="Skincare" 
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-obsidian/90 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-8">
+                  <h3 className="font-serif text-2xl mb-2">Rituais</h3>
+                  <span className="inline-block border-b border-champagne text-champagne pb-1">Skincare</span>
+                </div>
+              </Link>
+              <Link href="/products?category=gifts" className="group relative rounded-lg overflow-hidden h-[300px] md:h-auto bg-obsidian flex items-center justify-center">
+                <div className="text-center p-8 z-10">
+                  <h3 className="font-serif text-3xl italic mb-4">A Arte de Presentear</h3>
+                  <Button variant="outline" className="border-champagne text-champagne hover:bg-champagne hover:text-obsidian">
+                    Descobrir Kits
+                  </Button>
+                </div>
+              </Link>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
-    </div>
+    </>
   );
 }

@@ -1,0 +1,105 @@
+'use client';
+
+import React from 'react';
+import { ShoppingBag, X, Minus, Plus, Trash2 } from 'lucide-react';
+import { useCartStore } from '@/lib/store/cartStore';
+import { Button } from '../ui/Button';
+
+export function CartDrawer() {
+  const { items, isOpen, setIsOpen, updateQuantity, removeItem, getCartTotal } = useCartStore();
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      <div 
+        className="fixed inset-0 bg-obsidian/40 backdrop-blur-sm z-40 transition-opacity"
+        onClick={() => setIsOpen(false)}
+      />
+      <div className="fixed inset-y-0 right-0 w-full max-w-md bg-ivory shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out border-l border-graphite/10">
+        <div className="flex items-center justify-between p-6 border-b border-graphite/10">
+          <h2 className="text-xl font-serif text-obsidian tracking-tight">Your Cart</h2>
+          <button 
+            onClick={() => setIsOpen(false)}
+            className="p-2 text-graphite hover:text-obsidian transition-colors rounded-full hover:bg-graphite/5"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {items.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
+              <ShoppingBag size={48} className="text-graphite/30" />
+              <p className="text-graphite">Your cart is empty.</p>
+              <Button variant="outline" onClick={() => setIsOpen(false)}>
+                Continue Shopping
+              </Button>
+            </div>
+          ) : (
+            items.map((item) => (
+              <div key={item.variant.id} className="flex gap-4 items-start">
+                <div className="h-24 w-24 bg-graphite/5 rounded-md overflow-hidden flex-shrink-0">
+                  {item.product.images?.[0] && (
+                    <img 
+                      src={item.product.images[0]} 
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col gap-1">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-obsidian text-sm leading-tight">
+                      {item.product.name}
+                    </h3>
+                    <button 
+                      onClick={() => removeItem(item.variant.id)}
+                      className="text-graphite/50 hover:text-red-500 transition-colors p-1"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  <p className="text-xs text-graphite">{item.variant.name}</p>
+                  <div className="mt-auto flex items-center justify-between pt-2">
+                    <div className="flex items-center border border-graphite/20 rounded-md">
+                      <button 
+                        className="px-2 py-1 text-graphite hover:text-obsidian"
+                        onClick={() => updateQuantity(item.variant.id, Math.max(1, item.quantity - 1))}
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="px-2 text-sm">{item.quantity}</span>
+                      <button 
+                        className="px-2 py-1 text-graphite hover:text-obsidian"
+                        onClick={() => updateQuantity(item.variant.id, item.quantity + 1)}
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                    <span className="font-medium text-sm">
+                      ${(item.variant.price * item.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {items.length > 0 && (
+          <div className="border-t border-graphite/10 p-6 bg-ivory space-y-4">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-graphite">Subtotal</span>
+              <span className="font-medium text-obsidian">${getCartTotal().toFixed(2)}</span>
+            </div>
+            <p className="text-xs text-graphite">Shipping and taxes calculated at checkout.</p>
+            <Button size="full" className="font-serif tracking-wide">
+              Checkout
+            </Button>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}

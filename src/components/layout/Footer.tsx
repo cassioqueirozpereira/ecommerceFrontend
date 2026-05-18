@@ -1,15 +1,64 @@
-export default function Footer() {
+import React from 'react';
+import Link from 'next/link';
+import { Container } from '../ui/Container';
+
+export function Footer() {
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-12 mt-auto">
-      <div className="container mx-auto px-4 text-center">
-        <h2 className="text-2xl font-bold text-primary-600 dark:text-primary-400 mb-4">Lumina</h2>
-        <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
-          Experiência premium de compras com design moderno e performance excepcional.
-        </p>
-        <p className="text-sm text-gray-400">
-          &copy; {new Date().getFullYear()} Lumina E-commerce MVP. Todos os direitos reservados.
-        </p>
-      </div>
+    <footer className="bg-obsidian text-ivory pt-16 pb-8 mt-auto">
+      <Container>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+          <div className="md:col-span-1">
+            <h2 className="font-serif text-2xl font-bold tracking-tighter mb-4">LUXE</h2>
+            <p className="text-sm text-ivory/60 max-w-xs">
+              Defining neo-premium beauty and luxury lifestyle since 2026. Elevate your presence.
+            </p>
+          </div>
+          
+          <div>
+            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Shop</h3>
+            <ul className="space-y-3">
+              <li><Link href="/products" className="text-sm text-ivory/60 hover:text-ivory transition-colors">All Products</Link></li>
+              <li><Link href="/products?category=perfume" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Perfume</Link></li>
+              <li><Link href="/products?category=skincare" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Skincare</Link></li>
+              <li><Link href="/products?category=gifts" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Gifts</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Support</h3>
+            <ul className="space-y-3">
+              <li><Link href="#" className="text-sm text-ivory/60 hover:text-ivory transition-colors">FAQ</Link></li>
+              <li><Link href="#" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Shipping & Returns</Link></li>
+              <li><Link href="#" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Contact Us</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Newsletter</h3>
+            <p className="text-sm text-ivory/60 mb-4">Subscribe to receive updates, access to exclusive deals, and more.</p>
+            <form className="flex gap-2">
+              <input 
+                type="email" 
+                placeholder="Enter your email" 
+                className="bg-transparent border border-ivory/20 px-4 py-2 text-sm rounded-md w-full focus:outline-none focus:border-champagne"
+              />
+              <button type="submit" className="bg-ivory text-obsidian px-4 py-2 text-sm font-medium rounded-md hover:bg-ivory/90 transition-colors">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="pt-8 border-t border-ivory/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-ivory/40">
+            &copy; {new Date().getFullYear()} LUXE Beauty. All rights reserved.
+          </p>
+          <div className="flex gap-6">
+            <Link href="#" className="text-xs text-ivory/40 hover:text-ivory transition-colors">Privacy Policy</Link>
+            <Link href="#" className="text-xs text-ivory/40 hover:text-ivory transition-colors">Terms of Service</Link>
+          </div>
+        </div>
+      </Container>
     </footer>
   );
 }
