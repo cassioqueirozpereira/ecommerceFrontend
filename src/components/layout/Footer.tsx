@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Container } from '../ui/Container';
+import { NewsletterForm } from './NewsletterForm';
 
 export function Footer() {
   return (
@@ -36,16 +37,7 @@ export function Footer() {
           <div>
             <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Newsletter</h3>
             <p className="text-sm text-ivory/60 mb-4">Subscribe to receive updates, access to exclusive deals, and more.</p>
-            <form className="flex gap-2">
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
-                className="bg-transparent border border-ivory/20 px-4 py-2 text-sm rounded-md w-full focus:outline-none focus:border-champagne"
-              />
-              <button type="submit" className="bg-ivory text-obsidian px-4 py-2 text-sm font-medium rounded-md hover:bg-ivory/90 transition-colors">
-                Subscribe
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
         </div>
 

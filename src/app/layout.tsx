@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({ 
@@ -35,6 +36,16 @@ export default function RootLayout({
         <CartDrawer />
         <main className="flex-grow">{children}</main>
         <Footer />
+        <Toaster 
+          position="bottom-right" 
+          toastOptions={{
+            style: {
+              background: '#0D0D12',
+              color: '#FAF8F5',
+              border: '1px solid rgba(250, 248, 245, 0.2)',
+            }
+          }} 
+        />
       </body>
     </html>
   );

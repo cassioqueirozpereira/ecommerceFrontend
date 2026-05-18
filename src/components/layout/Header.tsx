@@ -1,13 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { ShoppingBag, Search, User } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { Container } from '../ui/Container';
+import { SearchModal } from './SearchModal';
 
 export function Header() {
   const { setIsOpen, items } = useCartStore();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -40,7 +42,10 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <button className="p-2 text-obsidian hover:text-graphite transition-colors">
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2 text-obsidian hover:text-graphite transition-colors"
+            >
               <Search size={20} />
             </button>
             <button className="hidden md:block p-2 text-obsidian hover:text-graphite transition-colors">
@@ -60,6 +65,7 @@ export function Header() {
           </div>
         </div>
       </Container>
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 }
