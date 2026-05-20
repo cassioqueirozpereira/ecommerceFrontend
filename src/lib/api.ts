@@ -44,3 +44,48 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     return null;
   }
 }
+
+export async function loginUser(data: any) {
+  const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao fazer login');
+  }
+
+  return res.json();
+}
+
+export async function registerUser(data: any) {
+  const res = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao registrar');
+  }
+
+  return res.json();
+}
+
+export async function subscribeNewsletter(email: string) {
+  const res = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao inscrever newsletter');
+  }
+
+  return res.json();
+}

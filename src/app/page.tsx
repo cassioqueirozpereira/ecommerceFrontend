@@ -20,7 +20,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/80 to-transparent z-10" />
           <img 
-            src="https://images.unsplash.com/photo-1615397323924-4f8ce91001e3?q=80&w=2000&auto=format&fit=crop" 
+            src="/produto1.jpeg" 
             alt="Luxury abstract background" 
             className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
           />
@@ -117,7 +117,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[600px]">
             <Link href="/products?category=perfume" className="group relative rounded-lg overflow-hidden h-[400px] md:h-auto">
               <img 
-                src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?q=80&w=1000&auto=format&fit=crop" 
+                src="/produto2.jpeg" 
                 alt="Perfumes" 
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80"
               />
@@ -131,7 +131,7 @@ export default async function HomePage() {
             <div className="grid grid-rows-2 gap-4">
               <Link href="/products?category=skincare" className="group relative rounded-lg overflow-hidden h-[300px] md:h-auto">
                 <img 
-                  src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1000&auto=format&fit=crop" 
+                  src="/produto3.jpeg" 
                   alt="Skincare" 
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80"
                 />

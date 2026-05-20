@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { subscribeNewsletter } from '@/lib/api';
 
 export function NewsletterForm() {
   const [email, setEmail] = useState('');
@@ -13,12 +14,15 @@ export function NewsletterForm() {
 
     setIsLoading(true);
 
-    // Simular uma requisição (API)
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    setIsLoading(false);
-    toast.success('Inscrição realizada com sucesso!');
-    setEmail('');
+    try {
+      const res = await subscribeNewsletter(email);
+      toast.success(res.message || 'Inscrição realizada com sucesso!');
+      setEmail('');
+    } catch (error: any) {
+      toast.error(error.message || 'Falha ao se inscrever. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
