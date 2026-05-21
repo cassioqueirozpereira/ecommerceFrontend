@@ -39,7 +39,7 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Link href="/products?category=perfume" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full bg-champagne text-obsidian hover:bg-ivory hover:text-obsidian">
+              <Button variant="secondary" size="lg" className="w-full">
                 Explorar Fragrâncias
               </Button>
             </Link>
