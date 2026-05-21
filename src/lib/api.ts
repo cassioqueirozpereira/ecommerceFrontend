@@ -3,6 +3,9 @@ import { Product } from '@/types';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 export async function getProducts(category?: string, sort?: string): Promise<Product[]> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout to prevent build hangs
+
   try {
     let url = `${API_BASE_URL}/products`;
     const params = new URLSearchParams();
@@ -16,30 +19,39 @@ export async function getProducts(category?: string, sort?: string): Promise<Pro
 
     const res = await fetch(url, {
       next: { revalidate: 60, tags: ['products'] },
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeoutId);
 
     if (!res.ok) throw new Error('Failed to fetch products');
     
     return res.json();
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error('Error fetching products:', error);
     return [];
   }
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
   try {
-    // In a real app we'd have a specific endpoint for this, e.g., /api/products/{slug}
-    // For now we'll fetch all and find, or just mock it if backend isn't ready
     const res = await fetch(`${API_BASE_URL}/products`, {
       next: { revalidate: 60, tags: [`product-${slug}`] },
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeoutId);
 
     if (!res.ok) return null;
     
     const products: Product[] = await res.json();
     return products.find(p => p.slug === slug) || null;
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error(`Error fetching product ${slug}:`, error);
     return null;
   }
