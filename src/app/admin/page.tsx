@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, ImageIcon, Package, ChevronDown, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Plus, Trash2, ImageIcon, Package, ChevronDown, CheckCircle2, AlertCircle, Loader2, Upload, Key } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
@@ -39,6 +39,66 @@ function uid() {
   return Math.random().toString(36).slice(2, 9);
 }
 
+function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Failed to get 2D canvas context'));
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error('Canvas toBlob returned null'));
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+}
+
+async function uploadToImgBB(blob: Blob, apiKey: string): Promise<string> {
+  const formData = new FormData();
+  formData.append('image', blob, 'upload.jpg');
+
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData?.error?.message || 'Falha ao fazer upload para o ImgBB');
+  }
+
+  const data = await res.json();
+  return data.data.url;
+}
+
 const inputClass =
   'w-full bg-transparent border-b border-obsidian/20 px-0 py-3 text-obsidian text-sm focus:outline-none focus:border-obsidian transition-colors rounded-none placeholder-graphite/40';
 const labelClass =
@@ -62,8 +122,14 @@ export default function AdminPage() {
   ]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // ImgBB Upload States
+  const [imgbbKey, setImgbbKey] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+
   useEffect(() => {
     setMounted(true);
+    const savedKey = localStorage.getItem('imgbb_api_key') || process.env.NEXT_PUBLIC_IMGBB_API_KEY || '';
+    setImgbbKey(savedKey);
   }, []);
 
   // Redirect if not authenticated (client-side guard)
@@ -92,6 +158,43 @@ export default function AdminPage() {
     setImages((prev) => prev.map((img, i) => (i === idx ? val : img)));
   const removeImage = (idx: number) =>
     setImages((prev) => prev.filter((_, i) => i !== idx));
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    if (!imgbbKey) {
+      toast.error('Insira sua Chave de API do ImgBB antes de selecionar fotos.');
+      return;
+    }
+
+    setIsUploading(true);
+    const uploadPromises = Array.from(files).map(async (file) => {
+      try {
+        toast.info(`Comprimindo e enviando ${file.name}...`);
+        const compressedBlob = await compressImage(file, 1200, 0.85);
+        const url = await uploadToImgBB(compressedBlob, imgbbKey);
+        return url;
+      } catch (err: any) {
+        console.error(err);
+        toast.error(`Erro no upload de ${file.name}: ${err.message}`);
+        return null;
+      }
+    });
+
+    const urls = await Promise.all(uploadPromises);
+    const validUrls = urls.filter((url): url is string => url !== null);
+
+    if (validUrls.length > 0) {
+      setImages((prev) => {
+        const cleanPrev = prev.filter((img) => img.trim() !== '');
+        return [...cleanPrev, ...validUrls];
+      });
+      toast.success(`${validUrls.length} imagem(ns) enviada(s) com sucesso!`);
+    }
+    setIsUploading(false);
+    e.target.value = '';
+  };
 
   // --- Variant helpers ---
   const addVariant = () =>
@@ -302,27 +405,92 @@ export default function AdminPage() {
           <section>
             <h2 className="text-xs font-bold uppercase tracking-widest text-graphite mb-6 flex items-center gap-2">
               <ImageIcon size={14} />
-              Imagens
+              Imagens do Produto
             </h2>
-            <p className="text-xs text-graphite/60 mb-4 -mt-3">
-              Cole URLs públicas de imagens (Cloudinary, ImgBB, Supabase Storage, etc.)
-            </p>
+
+            {/* ImgBB Key Setup */}
+            <div className="mb-6 p-4 border border-obsidian/10 rounded-lg bg-obsidian/[0.015] space-y-3">
+              <div className="flex items-center gap-2 text-xs font-semibold text-obsidian uppercase tracking-wider">
+                <Key size={14} className="text-graphite" />
+                <span>Configuração de Upload Gratuito (ImgBB)</span>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="password"
+                  value={imgbbKey}
+                  onChange={(e) => {
+                    setImgbbKey(e.target.value);
+                    localStorage.setItem('imgbb_api_key', e.target.value);
+                  }}
+                  placeholder="Sua Chave API do ImgBB (ex: 7a5b3f...)"
+                  className="flex-1 bg-transparent border-b border-obsidian/20 py-2 text-sm text-obsidian focus:outline-none focus:border-obsidian transition-colors placeholder-graphite/40"
+                />
+                <a
+                  href="https://api.imgbb.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center h-9 px-4 text-xs font-medium uppercase tracking-wider text-obsidian border border-obsidian hover:bg-obsidian/5 rounded transition-all"
+                >
+                  Obter chave grátis
+                </a>
+              </div>
+              <p className="text-[10px] text-graphite/60 leading-normal">
+                Esta chave fica salva apenas no seu navegador. As imagens serão redimensionadas e comprimidas no seu dispositivo antes de serem enviadas para economizar armazenamento.
+              </p>
+            </div>
+
+            {/* Selector files area */}
+            <div className="mb-6">
+              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-obsidian/20 rounded-xl cursor-pointer hover:bg-obsidian/[0.01] hover:border-obsidian/40 transition-all duration-200">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="w-8 h-8 text-graphite/60 animate-spin mb-2" />
+                      <p className="text-xs text-graphite font-medium">Enviando imagens...</p>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-graphite/60 mb-2" />
+                      <p className="text-xs text-graphite font-medium">Selecione fotos da galeria ou arraste aqui</p>
+                      <p className="text-[10px] text-graphite/40 mt-1">PNG, JPG ou WEBP (comprime automaticamente)</p>
+                    </>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  disabled={isUploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* Images List (with URLs and custom uploads) */}
             <div className="space-y-4">
               {images.map((img, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   {img && (
                     <div className="h-10 w-10 rounded-md overflow-hidden border border-graphite/10 flex-shrink-0 bg-graphite/5">
-                      <img src={img} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      <img
+                        src={img}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
                     </div>
                   )}
                   <input
                     type="url"
                     value={img}
                     onChange={(e) => updateImage(idx, e.target.value)}
-                    placeholder={`https://res.cloudinary.com/.../imagem-${idx + 1}.jpg`}
+                    placeholder={`URL da Imagem ${idx + 1}`}
                     className={`${inputClass} flex-1`}
                   />
-                  {images.length > 1 && (
+                  {images.length > 0 && (
                     <button
                       type="button"
                       onClick={() => removeImage(idx)}
@@ -334,12 +502,13 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+            
             <button
               type="button"
               onClick={addImage}
               className="mt-4 flex items-center gap-2 text-xs text-graphite hover:text-obsidian transition-colors font-medium uppercase tracking-widest"
             >
-              <Plus size={14} /> Adicionar imagem
+              <Plus size={14} /> Adicionar URL manual
             </button>
           </section>
 
