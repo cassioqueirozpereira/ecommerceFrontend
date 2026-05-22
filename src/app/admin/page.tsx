@@ -1,5 +1,6 @@
 'use client';
 
+// Trigger rebuild on Vercel
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, ImageIcon, Package, ChevronDown, CheckCircle2, AlertCircle, Loader2, Upload, Key } from 'lucide-react';
