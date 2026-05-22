@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 
@@ -48,9 +49,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     onClose();
   };
 
+  if (typeof window === 'undefined') return null;
   if (!isOpen && !isMounted) return null;
 
-  return (
+  return createPortal(
     <div 
       className={`fixed inset-0 z-50 flex flex-col items-center pt-20 bg-obsidian/80 backdrop-blur-md transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
     >
@@ -77,6 +79,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

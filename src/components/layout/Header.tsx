@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { ShoppingBag, Search, User } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
@@ -102,38 +103,43 @@ export function Header() {
                         </button>
                       </div>
 
-                      {/* Mobile Bottom Sheet & Blur Overlay */}
-                      <div 
-                        className="md:hidden fixed inset-0 bg-obsidian/40 backdrop-blur-sm z-40 transition-opacity animate-fade-in" 
-                        onClick={() => setIsUserMenuOpen(false)} 
-                      />
-                      <div className="md:hidden fixed bottom-0 inset-x-0 bg-ivory rounded-t-2xl border-t border-graphite/15 shadow-2xl p-6 pb-8 z-50 animate-slide-up">
-                        <div className="w-12 h-1 bg-graphite/20 rounded-full mx-auto mb-6" />
-                        <div className="mb-6">
-                          <p className="text-xs text-graphite uppercase tracking-widest font-semibold">Minha Conta</p>
-                          <p className="text-xl font-serif text-obsidian mt-1.5 truncate">
-                            {user?.firstName ? `Olá, ${user.firstName}` : user?.email}
-                          </p>
-                        </div>
-                        <div className="space-y-3">
-                          <button
-                            onClick={() => {
-                              logout();
-                              setIsUserMenuOpen(false);
-                              toast.success('Desconectado com sucesso.');
-                            }}
-                            className="w-full h-12 bg-obsidian text-ivory hover:bg-graphite rounded-md font-medium transition-colors text-sm shadow-sm"
-                          >
-                            Sair da Conta
-                          </button>
-                          <button
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="w-full h-12 border border-graphite/20 text-obsidian hover:bg-graphite/5 rounded-md font-medium transition-colors text-sm"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      </div>
+                      {/* Mobile Bottom Sheet & Blur Overlay - Portaled to document.body to prevent backdrop-filter stacking context bugs */}
+                      {mounted && typeof window !== 'undefined' && createPortal(
+                        <>
+                          <div 
+                            className="md:hidden fixed inset-0 bg-obsidian/40 backdrop-blur-sm z-40 transition-opacity animate-fade-in" 
+                            onClick={() => setIsUserMenuOpen(false)} 
+                          />
+                          <div className="md:hidden fixed bottom-0 inset-x-0 bg-ivory rounded-t-2xl border-t border-graphite/15 shadow-2xl p-6 pb-8 z-50 animate-slide-up">
+                            <div className="w-12 h-1 bg-graphite/20 rounded-full mx-auto mb-6" />
+                            <div className="mb-6">
+                              <p className="text-xs text-graphite uppercase tracking-widest font-semibold">Minha Conta</p>
+                              <p className="text-xl font-serif text-obsidian mt-1.5 truncate">
+                                {user?.firstName ? `Olá, ${user.firstName}` : user?.email}
+                              </p>
+                            </div>
+                            <div className="space-y-3">
+                              <button
+                                onClick={() => {
+                                  logout();
+                                  setIsUserMenuOpen(false);
+                                  toast.success('Desconectado com sucesso.');
+                                }}
+                                className="w-full h-12 bg-obsidian text-ivory hover:bg-graphite rounded-md font-medium transition-colors text-sm shadow-sm"
+                              >
+                                Sair da Conta
+                              </button>
+                              <button
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="w-full h-12 border border-graphite/20 text-obsidian hover:bg-graphite/5 rounded-md font-medium transition-colors text-sm"
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          </div>
+                        </>,
+                        document.body
+                      )}
                     </>
                   )}
                 </div>
