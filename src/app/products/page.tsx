@@ -135,7 +135,7 @@ export default async function ProductsPage({
                         <img 
                           src={product.images[0]} 
                           alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-150"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-graphite/30 bg-graphite/5">
