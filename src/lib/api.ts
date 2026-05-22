@@ -101,3 +101,21 @@ export async function subscribeNewsletter(email: string) {
 
   return res.json();
 }
+
+export async function createProduct(data: unknown, token: string) {
+  const res = await fetch(`${API_BASE_URL}/products`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao criar produto');
+  }
+
+  return res.json();
+}
