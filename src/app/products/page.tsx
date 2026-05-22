@@ -135,14 +135,14 @@ export default async function ProductsPage({
                         <img 
                           src={product.images[0]} 
                           alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-115"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-graphite/30 bg-graphite/5">
                           No Image
                         </div>
                       )}
-                      <div className="absolute inset-0 z-10 bg-obsidian/0 group-hover:bg-obsidian/10 transition-colors duration-500" />
+                      <div className="absolute inset-0 bg-obsidian/0 group-hover:bg-obsidian/5 transition-colors duration-300" />
                     </div>
                     <div className="flex justify-between items-start gap-4">
                       <div>
