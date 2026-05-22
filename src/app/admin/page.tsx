@@ -7,7 +7,7 @@ import { Plus, Trash2, ImageIcon, Package, ChevronDown, CheckCircle2, AlertCircl
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
-import { createProduct } from '@/lib/api';
+import { createProduct, getCloudinarySignature } from '@/lib/api';
 import { toast } from 'sonner';
 
 interface VariantForm {
@@ -72,7 +72,7 @@ function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<Blob
             if (blob) resolve(blob);
             else reject(new Error('Canvas toBlob returned null'));
           },
-          'image/jpeg',
+          'image/webp',
           quality
         );
       };
@@ -80,24 +80,6 @@ function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<Blob
     };
     reader.onerror = (err) => reject(err);
   });
-}
-
-async function uploadToImgBB(blob: Blob, apiKey: string): Promise<string> {
-  const formData = new FormData();
-  formData.append('image', blob, 'upload.jpg');
-
-  const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData?.error?.message || 'Falha ao fazer upload para o ImgBB');
-  }
-
-  const data = await res.json();
-  return data.data.url;
 }
 
 const inputClass =
@@ -123,14 +105,10 @@ export default function AdminPage() {
   ]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // ImgBB Upload States
-  const [imgbbKey, setImgbbKey] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const savedKey = localStorage.getItem('imgbb_api_key') || process.env.NEXT_PUBLIC_IMGBB_API_KEY || '';
-    setImgbbKey(savedKey);
   }, []);
 
   // Redirect if not authenticated (client-side guard)
@@ -164,18 +142,43 @@ export default function AdminPage() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    if (!imgbbKey) {
-      toast.error('Insira sua Chave de API do ImgBB antes de selecionar fotos.');
+    if (!token) {
+      toast.error('Você precisa estar logado para enviar imagens.');
       return;
     }
 
     setIsUploading(true);
     const uploadPromises = Array.from(files).map(async (file) => {
       try {
-        toast.info(`Comprimindo e enviando ${file.name}...`);
+        toast.info(`Processando e enviando ${file.name}...`);
+        
+        // 1. Obter assinatura do backend
+        const signatureData = await getCloudinarySignature(token);
+        
+        // 2. Comprimir imagem para WebP no lado cliente (Canvas API)
         const compressedBlob = await compressImage(file, 1200, 0.85);
-        const url = await uploadToImgBB(compressedBlob, imgbbKey);
-        return url;
+        
+        // 3. Montar formData para Cloudinary
+        const formData = new FormData();
+        formData.append('file', compressedBlob, file.name.replace(/\.[^/.]+$/, "") + ".webp");
+        formData.append('api_key', signatureData.apiKey);
+        formData.append('timestamp', signatureData.timestamp.toString());
+        formData.append('signature', signatureData.signature);
+        formData.append('folder', signatureData.folder);
+
+        // 4. Upload direto para Cloudinary
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error?.message || 'Falha no upload para o Cloudinary');
+        }
+
+        const data = await res.json();
+        return data.secure_url;
       } catch (err: any) {
         console.error(err);
         toast.error(`Erro no upload de ${file.name}: ${err.message}`);
@@ -408,37 +411,6 @@ export default function AdminPage() {
               <ImageIcon size={14} />
               Imagens do Produto
             </h2>
-
-            {/* ImgBB Key Setup */}
-            <div className="mb-6 p-4 border border-obsidian/10 rounded-lg bg-obsidian/[0.015] space-y-3">
-              <div className="flex items-center gap-2 text-xs font-semibold text-obsidian uppercase tracking-wider">
-                <Key size={14} className="text-graphite" />
-                <span>Configuração de Upload Gratuito (ImgBB)</span>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="password"
-                  value={imgbbKey}
-                  onChange={(e) => {
-                    setImgbbKey(e.target.value);
-                    localStorage.setItem('imgbb_api_key', e.target.value);
-                  }}
-                  placeholder="Sua Chave API do ImgBB (ex: 7a5b3f...)"
-                  className="flex-1 bg-transparent border-b border-obsidian/20 py-2 text-sm text-obsidian focus:outline-none focus:border-obsidian transition-colors placeholder-graphite/40"
-                />
-                <a
-                  href="https://api.imgbb.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center h-9 px-4 text-xs font-medium uppercase tracking-wider text-obsidian border border-obsidian hover:bg-obsidian/5 rounded transition-all"
-                >
-                  Obter chave grátis
-                </a>
-              </div>
-              <p className="text-[10px] text-graphite/60 leading-normal">
-                Esta chave fica salva apenas no seu navegador. As imagens serão redimensionadas e comprimidas no seu dispositivo antes de serem enviadas para economizar armazenamento.
-              </p>
-            </div>
 
             {/* Selector files area */}
             <div className="mb-6">

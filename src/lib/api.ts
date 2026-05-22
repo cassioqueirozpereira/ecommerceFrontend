@@ -119,3 +119,19 @@ export async function createProduct(data: unknown, token: string) {
 
   return res.json();
 }
+
+export async function getCloudinarySignature(token: string, folder: string = 'ecommerce/products') {
+  const res = await fetch(`${API_BASE_URL}/upload/signature?folder=${encodeURIComponent(folder)}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao obter assinatura de upload');
+  }
+
+  return res.json();
+}
