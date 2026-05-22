@@ -142,7 +142,7 @@ export default async function ProductsPage({
                           No Image
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-obsidian/0 group-hover:bg-obsidian/5 transition-colors duration-300" />
+                      <div className="absolute inset-0 z-10 bg-obsidian/0 group-hover:bg-obsidian/10 transition-colors duration-500" />
                     </div>
                     <div className="flex justify-between items-start gap-4">
                       <div>
