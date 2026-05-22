@@ -78,8 +78,20 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             <X size={24} />
           </button>
         </form>
+
+        {/* Cancel button below search input */}
+        <div className="flex justify-center mt-5">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-8 py-2.5 text-sm font-medium text-ivory/60 hover:text-ivory border border-ivory/15 hover:border-ivory/40 rounded-full transition-all duration-200 hover:bg-ivory/5 tracking-wide"
+          >
+            Cancelar
+          </button>
+        </div>
       </div>
     </div>,
+
     document.body
   );
 }
