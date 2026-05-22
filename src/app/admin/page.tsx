@@ -1,7 +1,7 @@
 'use client';
 
 // Trigger rebuild on Vercel
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, ImageIcon, Package, ChevronDown, CheckCircle2, AlertCircle, Loader2, Upload, Key } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
@@ -104,6 +104,7 @@ export default function AdminPage() {
     { id: uid(), sku: '', name: '', price: '', stock: '' },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const isSubmittingRef = useRef(false); // Prevents double-submit
 
   const [isUploading, setIsUploading] = useState(false);
 
@@ -217,6 +218,12 @@ export default function AdminPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Prevent double-submit (double-click or rapid re-render)
+    if (isSubmittingRef.current) {
+      console.warn('[Admin] Submit ignorado: já existe um envio em andamento.');
+      return;
+    }
+
     if (!token) {
       toast.error('Sessão expirada. Faça login novamente.');
       router.push('/login');
@@ -251,6 +258,9 @@ export default function AdminPage() {
       })),
     };
 
+    console.log('[Admin] Enviando payload:', JSON.stringify(payload, null, 2));
+
+    isSubmittingRef.current = true;
     setIsLoading(true);
     try {
       await createProduct(payload, token);
@@ -265,9 +275,11 @@ export default function AdminPage() {
       setVariants([{ id: uid(), sku: '', name: '', price: '', stock: '' }]);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Erro ao criar produto';
+      console.error('[Admin] Erro ao criar produto:', message);
       toast.error(message);
     } finally {
       setIsLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 

@@ -114,7 +114,9 @@ export async function createProduct(data: unknown, token: string) {
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Falha ao criar produto');
+    console.error('Erro detalhado do servidor (createProduct):', errorData);
+    const errorMessage = errorData.detail || errorData.title || errorData.message || 'Falha ao criar produto';
+    throw new Error(errorMessage);
   }
 
   return res.json();
