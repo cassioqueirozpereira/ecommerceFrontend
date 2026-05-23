@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { getProducts } from '@/lib/api';
-import { NavLink } from '@/components/ui/NavLink';
-import { buildCategoryUrl, buildSortUrl, FILTER_CATEGORIES } from '@/lib/productUtils';
 
 export const metadata = {
   title: 'Coleção | Luxe Beauty',

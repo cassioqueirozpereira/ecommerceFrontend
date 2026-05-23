@@ -18,6 +18,16 @@ interface ProductCardProps {
   currency?: string;
 }
 
+const hoverScaleClasses: Record<string, string> = {
+  '105': 'group-hover:scale-105',
+  '110': 'group-hover:scale-110',
+  '125': 'group-hover:scale-125',
+  '150': 'group-hover:scale-150',
+  '175': 'group-hover:scale-[1.75]',
+  '[1.75]': 'group-hover:scale-[1.75]',
+  '200': 'group-hover:scale-200',
+};
+
 /**
  * Premium product card with zoom-on-hover image effect.
  * Used on the home page (Destaques) and the products grid.
@@ -29,7 +39,7 @@ export function ProductCard({
   showPrice = true,
   currency = '$',
 }: ProductCardProps) {
-  const scaleClass = `group-hover:scale-${hoverScale}`;
+  const scaleClass = hoverScaleClasses[hoverScale] || 'group-hover:scale-150';
 
   return (
     <Link href={`/product/${product.slug}`} className="group flex flex-col">

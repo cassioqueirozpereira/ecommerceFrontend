@@ -32,8 +32,8 @@ export default async function HomePage() {
             A Nova Era da Beleza
           </span>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tighter mb-6 max-w-4xl text-balance">
-            Oceano noturno <br/>
-            <span className="italic font-light">encontra a precisão.</span>
+            Onde os melhores produtos <br/>
+            <span className="italic font-light">estão ao alcance de todos!</span>
           </h1>
           <p className="text-ivory/70 text-lg md:text-xl max-w-xl mx-auto mb-10 font-light">
             Descubra nossa nova coleção de fragrâncias exclusivas desenhadas para deixar uma marca inesquecível.
@@ -61,9 +61,6 @@ export default async function HomePage() {
               <h2 className="text-3xl md:text-4xl font-serif tracking-tight">Destaques</h2>
               <p className="text-graphite mt-2">Nossas curadorias mais exclusivas.</p>
             </div>
-            <Link href="/products" className="hidden md:inline-flex text-sm font-medium hover:text-champagne transition-colors pb-1 border-b border-obsidian hover:border-champagne">
-              Ver Coleção Completa
-            </Link>
           </div>
 
           {featuredProducts.length > 0 ? (
