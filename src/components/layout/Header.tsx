@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { ShoppingBag, Search, User } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, X, ChevronDown, ChevronUp, ShieldAlert } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 import { Container } from '../ui/Container';
+import { NavLink } from '../ui/NavLink';
 import { SearchModal } from './SearchModal';
+import { NAV_CATEGORIES, FILTER_CATEGORIES, buildCategoryUrl, buildSortUrl } from '@/lib/productUtils';
 
 export function Header() {
   const { setIsOpen, items } = useCartStore();
@@ -17,6 +19,8 @@ export function Header() {
   const [mounted, setMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -24,31 +28,38 @@ export function Header() {
     setMounted(true);
   }, []);
 
+  const toggleAccordion = (id: string) => {
+    setOpenAccordion(openAccordion === id ? null : id);
+  };
+
   return (
     <header className="sticky top-0 z-30 w-full bg-ivory/80 backdrop-blur-md border-b border-graphite/10">
       <Container>
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <h1 className="font-serif text-2xl font-bold tracking-tighter text-obsidian">
-              LUXE
-            </h1>
-          </Link>
+          
+          {/* Left Area: Hamburger + Logo */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="p-2 -ml-2 text-obsidian hover:text-graphite transition-colors"
+              aria-label="Menu principal"
+            >
+              <Menu size={24} />
+            </button>
+            <Link href="/" className="flex-shrink-0">
+              <h1 className="font-serif text-2xl font-bold tracking-tighter text-obsidian">
+                LUXE
+              </h1>
+            </Link>
+          </div>
 
           {/* Navigation - Hidden on mobile */}
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="/products" className="text-sm font-medium text-graphite hover:text-obsidian transition-colors">
-              New Arrivals
-            </Link>
-            <Link href="/products" className="text-sm font-medium text-graphite hover:text-obsidian transition-colors">
-              Perfumes
-            </Link>
-            <Link href="/products" className="text-sm font-medium text-graphite hover:text-obsidian transition-colors">
-              Skincare
-            </Link>
-            <Link href="/products" className="text-sm font-medium text-graphite hover:text-obsidian transition-colors">
-              Collections
-            </Link>
+          <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+            {NAV_CATEGORIES.map((cat) => (
+              <NavLink key={cat.slug || 'new'} href={buildCategoryUrl(cat.slug)}>
+                {cat.label}
+              </NavLink>
+            ))}
           </nav>
 
           {/* Actions */}
@@ -169,6 +180,114 @@ export function Header() {
         </div>
       </Container>
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      {/* Hamburger Menu Drawer */}
+      {mounted && typeof window !== 'undefined' && createPortal(
+        <>
+          {/* Overlay */}
+          <div 
+            className={`fixed inset-0 bg-obsidian/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            onClick={() => setIsMenuOpen(false)}
+          />
+          {/* Drawer */}
+          <div className={`fixed inset-y-0 left-0 w-80 max-w-[80vw] bg-ivory shadow-2xl z-50 transform transition-transform duration-300 flex flex-col ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <div className="flex items-center justify-between p-6 border-b border-graphite/10">
+              <span className="font-serif text-xl font-bold tracking-tighter text-obsidian">MENU</span>
+              <button onClick={() => setIsMenuOpen(false)} className="p-2 -mr-2 text-obsidian hover:text-graphite transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto py-4">
+              <div className="px-6 space-y-1">
+                {/* Admin Link */}
+                <Link 
+                  href="/admin" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 py-3 text-obsidian font-medium hover:text-champagne transition-colors border-b border-graphite/5"
+                >
+                  <ShieldAlert size={18} />
+                  <span>Publicar Produtos (Admin)</span>
+                </Link>
+
+                {/* Categories Accordion */}
+                <div className="border-b border-graphite/5">
+                  <button 
+                    onClick={() => toggleAccordion('categories')}
+                    className="w-full flex items-center justify-between py-4 text-obsidian font-medium hover:text-champagne transition-colors"
+                  >
+                    <span>Categorias</span>
+                    {openAccordion === 'categories' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-300 ${openAccordion === 'categories' ? 'max-h-64 opacity-100 mb-4' : 'max-h-0 opacity-0'}`}>
+                    <ul className="space-y-3 pl-4 border-l border-graphite/10 ml-2">
+                      {FILTER_CATEGORIES.map((cat) => (
+                        <li key={cat.slug || 'all'}>
+                          <Link 
+                            href={buildCategoryUrl(cat.slug)}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="block text-sm text-graphite hover:text-obsidian transition-colors"
+                          >
+                            {cat.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Sort Accordion */}
+                <div className="border-b border-graphite/5">
+                  <button 
+                    onClick={() => toggleAccordion('sort')}
+                    className="w-full flex items-center justify-between py-4 text-obsidian font-medium hover:text-champagne transition-colors"
+                  >
+                    <span>Ordenar por</span>
+                    {openAccordion === 'sort' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-300 ${openAccordion === 'sort' ? 'max-h-64 opacity-100 mb-4' : 'max-h-0 opacity-0'}`}>
+                    <ul className="space-y-3 pl-4 border-l border-graphite/10 ml-2">
+                      <li>
+                        <Link 
+                          href={buildSortUrl('newest')}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="block text-sm text-graphite hover:text-obsidian transition-colors"
+                        >
+                          Mais Recentes
+                        </Link>
+                      </li>
+                      <li>
+                        <Link 
+                          href={buildSortUrl('price_asc')}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="block text-sm text-graphite hover:text-obsidian transition-colors"
+                        >
+                          Preço: Menor para Maior
+                        </Link>
+                      </li>
+                      <li>
+                        <Link 
+                          href={buildSortUrl('price_desc')}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="block text-sm text-graphite hover:text-obsidian transition-colors"
+                        >
+                          Preço: Maior para Menor
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Drawer Footer */}
+            <div className="p-6 border-t border-graphite/10 bg-ivory/50">
+              <p className="text-xs text-graphite/60 text-center tracking-widest uppercase">LUXE Beauty</p>
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
     </header>
   );
 }

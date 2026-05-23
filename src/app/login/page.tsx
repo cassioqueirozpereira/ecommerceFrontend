@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
-import { Button } from '@/components/ui/Button';
+import { FormField } from '@/components/ui/FormField';
+import { LoadingButton } from '@/components/ui/LoadingButton';
 import { loginUser } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
@@ -22,8 +23,6 @@ export default function LoginPage() {
 
     try {
       const res = await loginUser({ email, password });
-      // Depending on backend response structure:
-      // Assuming res.token and res.user (or decoding JWT if needed)
       login(res.user || { email, id: 'temp', firstName: '', lastName: '' }, res.accessToken || res.token);
       toast.success('Bem-vindo de volta!');
       router.push('/');
@@ -43,45 +42,43 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-widest text-graphite mb-2" htmlFor="email">
-              E-mail
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-transparent border-b border-obsidian/20 px-0 py-3 text-obsidian focus:outline-none focus:border-obsidian transition-colors rounded-none"
-              placeholder="seu@email.com"
-            />
-          </div>
+          <FormField
+            id="email"
+            label="E-mail"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="seu@email.com"
+            required
+          />
+          <FormField
+            id="password"
+            label="Senha"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+          />
 
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-widest text-graphite mb-2" htmlFor="password">
-              Senha
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-transparent border-b border-obsidian/20 px-0 py-3 text-obsidian focus:outline-none focus:border-obsidian transition-colors rounded-none"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <Button type="submit" size="full" className="mt-8" disabled={isLoading}>
-            {isLoading ? 'Autenticando...' : 'Entrar'}
-          </Button>
+          <LoadingButton
+            type="submit"
+            size="full"
+            className="mt-8"
+            isLoading={isLoading}
+            loadingText="Autenticando..."
+          >
+            Entrar
+          </LoadingButton>
         </form>
 
         <div className="mt-8 text-center text-sm text-graphite">
           <p>
             Ainda não tem uma conta?{' '}
-            <Link href="/register" className="text-obsidian font-medium hover:underline border-b border-transparent hover:border-obsidian pb-0.5 transition-all">
+            <Link
+              href="/register"
+              className="text-obsidian font-medium hover:underline border-b border-transparent hover:border-obsidian pb-0.5 transition-all"
+            >
               Criar conta
             </Link>
           </p>

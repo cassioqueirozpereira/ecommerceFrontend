@@ -3,9 +3,10 @@
 // Trigger rebuild on Vercel
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, ImageIcon, Package, ChevronDown, CheckCircle2, AlertCircle, Loader2, Upload, Key } from 'lucide-react';
+import { Plus, Trash2, ImageIcon, Package, ChevronDown, AlertCircle, Loader2, Upload, Key, CheckCircle2 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
-import { Button } from '@/components/ui/Button';
+import { FormField } from '@/components/ui/FormField';
+import { LoadingButton } from '@/components/ui/LoadingButton';
 import { useAuthStore } from '@/store/authStore';
 import { createProduct, getCloudinarySignature } from '@/lib/api';
 import { toast } from 'sonner';
@@ -20,10 +21,10 @@ interface VariantForm {
 
 const CATEGORIES = [
   { id: 1, name: 'Perfumes', slug: 'perfumes' },
-  { id: 2, name: 'Skincare', slug: 'skincare' },
-  { id: 3, name: 'Body Care', slug: 'body-care' },
-  { id: 4, name: 'Hair Care', slug: 'hair-care' },
-  { id: 5, name: 'Accessories', slug: 'accessories' },
+  { id: 2, name: 'Cuidados com a pele', slug: 'cuidados-com-a-pele' },
+  { id: 3, name: 'Cuidados com o corpo', slug: 'cuidados-com-o-corpo' },
+  { id: 4, name: 'Cuidados com o cabelo', slug: 'cuidados-com-o-cabelo' },
+  { id: 5, name: 'Acessórios', slug: 'acessorios' },
 ];
 
 function generateSlug(name: string) {
@@ -314,18 +315,15 @@ export default function AdminPage() {
               Informações Básicas
             </h2>
             <div className="space-y-8">
-              <div>
-                <label className={labelClass} htmlFor="prod-name">Nome do Produto</label>
-                <input
-                  id="prod-name"
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Perfume Noir Intense"
-                  className={inputClass}
-                />
-              </div>
+              <FormField
+                id="prod-name"
+                label="Nome do Produto"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ex: Perfume Noir Intense"
+                variant="admin"
+                required
+              />
 
               <div>
                 <label className={labelClass} htmlFor="prod-slug">
@@ -384,36 +382,25 @@ export default function AdminPage() {
               Preços
             </h2>
             <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-              <div>
-                <label className={labelClass} htmlFor="prod-price">Preço Base (R$)</label>
-                <input
-                  id="prod-price"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  required
-                  value={basePrice}
-                  onChange={(e) => setBasePrice(e.target.value)}
-                  placeholder="319.90"
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass} htmlFor="prod-promo">
-                  Preço Promocional (R$){' '}
-                  <span className="normal-case font-normal tracking-normal text-graphite/50">opcional</span>
-                </label>
-                <input
-                  id="prod-promo"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={promotionalPrice}
-                  onChange={(e) => setPromotionalPrice(e.target.value)}
-                  placeholder="279.90"
-                  className={inputClass}
-                />
-              </div>
+              <FormField
+                id="prod-price"
+                label="Preço Base (R$)"
+                type="number"
+                value={basePrice}
+                onChange={(e) => setBasePrice(e.target.value)}
+                placeholder="319.90"
+                variant="admin"
+                required
+              />
+              <FormField
+                id="prod-promo"
+                label="Preço Promocional (R$)"
+                type="number"
+                value={promotionalPrice}
+                onChange={(e) => setPromotionalPrice(e.target.value)}
+                placeholder="279.90"
+                variant="admin"
+              />
             </div>
           </section>
 
@@ -493,7 +480,7 @@ export default function AdminPage() {
               onClick={addImage}
               className="mt-4 flex items-center gap-2 text-xs text-graphite hover:text-obsidian transition-colors font-medium uppercase tracking-widest"
             >
-              <Plus size={14} /> Adicionar URL manual
+              <Plus size={14} /> Adicionar URL manual (Caso tenha o link da imagem)
             </button>
           </section>
 
@@ -536,7 +523,7 @@ export default function AdminPage() {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>SKU</label>
+                      <label className={labelClass}>SKU (Código do produto)</label>
                       <input
                         type="text"
                         required
@@ -601,24 +588,18 @@ export default function AdminPage() {
             >
               ← Voltar para a loja
             </button>
-            <Button
+            <LoadingButton
               type="submit"
               size="lg"
-              disabled={isLoading}
+              isLoading={isLoading}
+              loadingText="Criando produto..."
               className="min-w-[220px]"
             >
-              {isLoading ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
-                  Criando produto...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 size={16} />
-                  Publicar Produto
-                </span>
-              )}
-            </Button>
+              <span className="flex items-center gap-2">
+                <CheckCircle2 size={16} />
+                Publicar Produto
+              </span>
+            </LoadingButton>
           </div>
         </form>
       </Container>

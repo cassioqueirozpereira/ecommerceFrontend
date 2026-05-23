@@ -1,7 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
+import { ProductCard } from '@/components/ui/ProductCard';
 import { getProducts } from '@/lib/api';
+import { buildCategoryUrl, buildSortUrl, FILTER_CATEGORIES } from '@/lib/productUtils';
 
 export const metadata = {
   title: 'Coleção | Luxe Beauty',
@@ -17,21 +19,6 @@ export default async function ProductsPage({
   
   // Fetch from server using SSR with query params
   const products = await getProducts(category, sort);
-
-  // Sorting links helper
-  const buildSortUrl = (newSort: string) => {
-    const params = new URLSearchParams();
-    if (category) params.append('category', category);
-    params.append('sort', newSort);
-    return `/products?${params.toString()}`;
-  };
-
-  const buildCategoryUrl = (newCat: string) => {
-    const params = new URLSearchParams();
-    if (newCat) params.append('category', newCat);
-    if (sort) params.append('sort', sort);
-    return `/products?${params.toString()}`;
-  };
 
   return (
     <div className="min-h-screen bg-ivory text-obsidian pb-24">
@@ -54,38 +41,20 @@ export default async function ProductsPage({
             <div>
               <h3 className="font-medium tracking-widest text-sm uppercase mb-4 text-graphite">Categorias</h3>
               <ul className="space-y-3 text-sm">
-                <li>
-                  <Link 
-                    href={buildCategoryUrl('')}
-                    className={`${!category ? 'text-obsidian font-medium' : 'text-graphite hover:text-obsidian'}`}
-                  >
-                    Ver Tudo
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href={buildCategoryUrl('perfume')}
-                    className={`${category === 'perfume' ? 'text-obsidian font-medium' : 'text-graphite hover:text-obsidian'}`}
-                  >
-                    Perfume
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href={buildCategoryUrl('skincare')}
-                    className={`${category === 'skincare' ? 'text-obsidian font-medium' : 'text-graphite hover:text-obsidian'}`}
-                  >
-                    Skincare
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href={buildCategoryUrl('gifts')}
-                    className={`${category === 'gifts' ? 'text-obsidian font-medium' : 'text-graphite hover:text-obsidian'}`}
-                  >
-                    Kits e Presentes
-                  </Link>
-                </li>
+                {FILTER_CATEGORIES.map((cat) => (
+                  <li key={cat.slug || 'all'}>
+                    <Link 
+                      href={buildCategoryUrl(cat.slug, sort)}
+                      className={`${
+                        (cat.slug === '' && !category) || category === cat.slug
+                          ? 'text-obsidian font-medium'
+                          : 'text-graphite hover:text-obsidian'
+                      }`}
+                    >
+                      {cat.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -94,7 +63,7 @@ export default async function ProductsPage({
               <ul className="space-y-3 text-sm">
                 <li>
                   <Link 
-                    href={buildSortUrl('newest')}
+                    href={buildSortUrl('newest', category)}
                     className={`${sort === 'newest' ? 'text-obsidian font-medium' : 'text-graphite hover:text-obsidian'}`}
                   >
                     Mais Recentes
@@ -102,7 +71,7 @@ export default async function ProductsPage({
                 </li>
                 <li>
                   <Link 
-                    href={buildSortUrl('price_asc')}
+                    href={buildSortUrl('price_asc', category)}
                     className={`${sort === 'price_asc' ? 'text-obsidian font-medium' : 'text-graphite hover:text-obsidian'}`}
                   >
                     Preço: Menor para Maior
@@ -110,7 +79,7 @@ export default async function ProductsPage({
                 </li>
                 <li>
                   <Link 
-                    href={buildSortUrl('price_desc')}
+                    href={buildSortUrl('price_desc', category)}
                     className={`${sort === 'price_desc' ? 'text-obsidian font-medium' : 'text-graphite hover:text-obsidian'}`}
                   >
                     Preço: Maior para Menor
@@ -129,31 +98,7 @@ export default async function ProductsPage({
             {products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
                 {products.map((product) => (
-                  <Link key={product.id} href={`/product/${product.slug}`} className="group flex flex-col">
-                    <div className="aspect-[4/5] bg-graphite/5 rounded-md overflow-hidden mb-4 relative">
-                      {product.images?.[0] ? (
-                        <img 
-                          src={product.images[0]} 
-                          alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.75]"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-graphite/30 bg-graphite/5">
-                          No Image
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-obsidian/0 group-hover:bg-obsidian/5 transition-colors duration-300" />
-                    </div>
-                    <div className="flex justify-between items-start gap-4">
-                      <div>
-                        <h3 className="font-medium text-lg leading-tight group-hover:text-champagne transition-colors">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-graphite mt-1">{product.category?.name || 'Skincare'}</p>
-                      </div>
-                      <p className="font-serif">${product.basePrice.toFixed(2)}</p>
-                    </div>
-                  </Link>
+                  <ProductCard key={product.id} product={product} hoverScale="[1.75]" />
                 ))}
               </div>
             ) : (

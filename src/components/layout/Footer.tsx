@@ -11,43 +11,43 @@ export function Footer() {
           <div className="md:col-span-1">
             <h2 className="font-serif text-2xl font-bold tracking-tighter mb-4">LUXE</h2>
             <p className="text-sm text-ivory/60 max-w-xs">
-              Defining neo-premium beauty and luxury lifestyle since 2026. Elevate your presence.
+              Trazendo o auge do autocuidado e da beleza para a sua rotina. Eleve sua presença.
             </p>
           </div>
           
           <div>
-            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Shop</h3>
+            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Loja</h3>
             <ul className="space-y-3">
-              <li><Link href="/products" className="text-sm text-ivory/60 hover:text-ivory transition-colors">All Products</Link></li>
-              <li><Link href="/products?category=perfume" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Perfume</Link></li>
-              <li><Link href="/products?category=skincare" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Skincare</Link></li>
-              <li><Link href="/products?category=gifts" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Gifts</Link></li>
+              <li><Link href="/products" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Novidades</Link></li>
+              <li><Link href="/products?category=perfume" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Perfumes</Link></li>
+              <li><Link href="/products?category=cuidados-com-a-pele" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Cuidados com a pele</Link></li>
+              <li><Link href="/products?category=kits-e-presentes" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Kits e Presentes</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Support</h3>
+            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Suporte</h3>
             <ul className="space-y-3">
               <li><Link href="#" className="text-sm text-ivory/60 hover:text-ivory transition-colors">FAQ</Link></li>
-              <li><Link href="#" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Shipping & Returns</Link></li>
-              <li><Link href="#" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Contact Us</Link></li>
+              <li><Link href="#" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Envios e Devoluções</Link></li>
+              <li><Link href="#" className="text-sm text-ivory/60 hover:text-ivory transition-colors">Contacte-nos</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Newsletter</h3>
-            <p className="text-sm text-ivory/60 mb-4">Subscribe to receive updates, access to exclusive deals, and more.</p>
+            <h3 className="font-medium mb-4 text-sm tracking-widest uppercase">Novidades por email</h3>
+            <p className="text-sm text-ivory/60 mb-4">Receba novidades e ofertas exclusivas.</p>
             <NewsletterForm />
           </div>
         </div>
 
         <div className="pt-8 border-t border-ivory/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-ivory/40">
-            &copy; {new Date().getFullYear()} LUXE Beauty. All rights reserved.
+            &copy; {new Date().getFullYear()} LUXE Beauty. Todos os direitos reservados.
           </p>
           <div className="flex gap-6">
-            <Link href="#" className="text-xs text-ivory/40 hover:text-ivory transition-colors">Privacy Policy</Link>
-            <Link href="#" className="text-xs text-ivory/40 hover:text-ivory transition-colors">Terms of Service</Link>
+            <Link href="#" className="text-xs text-ivory/40 hover:text-ivory transition-colors">Política de Privacidade</Link>
+            <Link href="#" className="text-xs text-ivory/40 hover:text-ivory transition-colors">Termos de Serviço</Link>
           </div>
         </div>
       </Container>
