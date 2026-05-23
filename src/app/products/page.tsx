@@ -12,12 +12,13 @@ export const metadata = {
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: { category?: string; sort?: string };
+  searchParams: { category?: string; sort?: string; search?: string; q?: string };
 }) {
-  const { category, sort } = searchParams;
+  const { category, sort, search, q } = searchParams;
+  const searchQuery = search || q;
   
   // Fetch from server using SSR with query params
-  const products = await getProducts(category, sort);
+  const products = await getProducts(category, sort, searchQuery);
 
   return (
     <div className="min-h-screen bg-ivory text-obsidian pb-24">
@@ -25,10 +26,12 @@ export default async function ProductsPage({
       <div className="bg-obsidian text-ivory py-16 md:py-24 text-center">
         <Container>
           <h1 className="text-4xl md:text-6xl font-serif tracking-tighter mb-4 capitalize">
-            {category || 'Toda a Coleção'}
+            {searchQuery ? `Busca: ${searchQuery}` : (category || 'Toda a Coleção')}
           </h1>
           <p className="text-ivory/70 max-w-2xl mx-auto font-light">
-            Descubra o auge da qualidade e sofisticação. Nossa seleção curada representa a melhor perfumaria e cuidados para a pele.
+            {searchQuery 
+              ? `Mostrando resultados encontrados para a pesquisa "${searchQuery}".`
+              : 'Descubra o auge da qualidade e sofisticação. Nossa seleção curada representa a melhor perfumaria e cuidados para a pele.'}
           </p>
         </Container>
       </div>
@@ -41,6 +44,11 @@ export default async function ProductsPage({
           <div className="flex-1">
             <div className="mb-6 flex justify-between items-center text-sm text-graphite border-b border-graphite/10 pb-4">
               <span>{products.length} {products.length === 1 ? 'produto' : 'produtos'}</span>
+              {searchQuery && (
+                <Link href="/products" className="text-champagne hover:text-champagne/80 font-medium transition-colors">
+                  Ver todos os produtos
+                </Link>
+              )}
             </div>
 
             {products.length > 0 ? (
@@ -52,7 +60,7 @@ export default async function ProductsPage({
             ) : (
               <div className="py-24 text-center">
                 <h3 className="text-xl font-serif mb-2">Nenhum produto encontrado</h3>
-                <p className="text-graphite mb-6">Tente ajustar seus filtros de busca.</p>
+                <p className="text-graphite mb-6">Tente ajustar seus filtros de busca ou termos pesquisados.</p>
                 <Link href="/products" className="text-champagne border-b border-champagne pb-1">
                   Limpar todos os filtros
                 </Link>

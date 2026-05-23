@@ -2,7 +2,7 @@ import { Product } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
-export async function getProducts(category?: string, sort?: string): Promise<Product[]> {
+export async function getProducts(category?: string, sort?: string, search?: string): Promise<Product[]> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout to prevent build hangs
 
@@ -12,6 +12,7 @@ export async function getProducts(category?: string, sort?: string): Promise<Pro
     
     if (category) params.append('category', category);
     if (sort) params.append('sort', sort);
+    if (search) params.append('search', search);
     
     if (params.toString()) {
       url += `?${params.toString()}`;
@@ -136,4 +137,40 @@ export async function getCloudinarySignature(token: string, folder: string = 'ec
   }
 
   return res.json();
+}
+
+export async function createOrder(data: any, token: string, idempotencyKey: string) {
+  const res = await fetch(`${API_BASE_URL}/orders`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Idempotency-Key': idempotencyKey,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao criar o pedido');
+  }
+
+  return res.json();
+}
+
+export async function getPaymentLink(orderId: string, token: string): Promise<string> {
+  const res = await fetch(`${API_BASE_URL}/orders/${orderId}/pay`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao obter link de pagamento');
+  }
+
+  const data = await res.json();
+  return data.paymentUrl;
 }

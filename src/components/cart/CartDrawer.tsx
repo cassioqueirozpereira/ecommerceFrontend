@@ -1,12 +1,74 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 import { ShoppingBag, X, Minus, Plus, Trash2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
+import { useAuthStore } from '@/store/authStore';
+import { createOrder, getPaymentLink } from '@/lib/api';
 import { Button } from '../ui/Button';
 
 export function CartDrawer() {
-  const { items, isOpen, setIsOpen, updateQuantity, removeItem, getCartTotal } = useCartStore();
+  const { items, isOpen, setIsOpen, updateQuantity, removeItem, getCartTotal, clearCart } = useCartStore();
+  const { token, isAuthenticated } = useAuthStore();
+  const router = useRouter();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleCheckout = async () => {
+    if (!isAuthenticated) {
+      toast.error('Faça login para finalizar a sua compra.');
+      setIsOpen(false);
+      router.push('/login');
+      return;
+    }
+
+    if (!token) return;
+
+    setIsCheckingOut(true);
+    const toastId = toast.loading('Processando seu pedido...');
+
+    try {
+      // 1. Generate unique Idempotency Key
+      const idempotencyKey = crypto.randomUUID();
+
+      // 2. Prepare payload
+      const orderItemsPayload = items.map((item) => ({
+        productId: item.product.id,
+        variantId: item.variant.id,
+        quantity: item.quantity,
+      }));
+
+      const payload = {
+        items: orderItemsPayload,
+        paymentMethod: 'MERCADOPAGO',
+      };
+
+      // 3. Create Order
+      const order = await createOrder(payload, token, idempotencyKey);
+      
+      toast.loading('Preparando link de pagamento...', { id: toastId });
+
+      // 4. Retrieve payment link
+      const paymentUrl = await getPaymentLink(order.id, token);
+
+      toast.success('Pedido criado com sucesso! Redirecionando...', { id: toastId });
+      
+      // 5. Clear cart and redirect
+      clearCart();
+      setIsOpen(false);
+      
+      setTimeout(() => {
+        window.location.href = paymentUrl;
+      }, 500);
+
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || 'Falha ao processar checkout. Tente novamente.', { id: toastId });
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -94,8 +156,13 @@ export function CartDrawer() {
               <span className="font-medium text-obsidian">${getCartTotal().toFixed(2)}</span>
             </div>
             <p className="text-xs text-graphite">Shipping and taxes calculated at checkout.</p>
-            <Button size="full" className="font-serif tracking-wide">
-              Checkout
+            <Button 
+              size="full" 
+              className="font-serif tracking-wide"
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+            >
+              {isCheckingOut ? 'Processando...' : 'Finalizar Compra (Checkout)'}
             </Button>
           </div>
         )}
