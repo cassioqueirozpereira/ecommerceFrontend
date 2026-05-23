@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
-import { ProductCard } from '@/components/ui/ProductCard';
+import { ProductCard, ProductCardSkeleton } from '@/components/ui/ProductCard';
 import { getProducts } from '@/lib/api';
 
 // Forcing this page to revalidate every hour or rely on ISR
@@ -69,17 +69,13 @@ export default async function HomePage() {
           {featuredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} hoverScale="125" />
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-[4/5] bg-graphite/10 rounded-md mb-4" />
-                  <div className="h-5 bg-graphite/10 rounded w-3/4 mb-2" />
-                  <div className="h-4 bg-graphite/10 rounded w-1/2" />
-                </div>
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           )}

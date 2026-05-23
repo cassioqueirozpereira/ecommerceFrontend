@@ -22,6 +22,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   
+  const isAdmin = isAuthenticated && (user?.roles?.includes('ROLE_ADMIN') || user?.role === 'ROLE_ADMIN' || user?.role === 'ADMIN' || user?.email?.toLowerCase() === 'admin@luxe.com');
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export function Header() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="p-2 -ml-2 text-obsidian hover:text-graphite transition-colors"
+              className="md:hidden p-2 -ml-2 text-obsidian hover:text-graphite transition-colors"
               aria-label="Menu principal"
             >
               <Menu size={24} />
@@ -60,6 +61,33 @@ export function Header() {
                 {cat.label}
               </NavLink>
             ))}
+            
+            {/* Sort Dropdown */}
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-sm font-medium text-graphite hover:text-obsidian transition-colors py-2">
+                Ordenar por <ChevronDown size={14} />
+              </button>
+              <div className="absolute top-full left-0 mt-4 w-52 bg-ivory border border-graphite/10 shadow-xl rounded-md py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <Link 
+                  href={buildSortUrl('newest')}
+                  className="block px-4 py-2.5 text-sm text-graphite hover:bg-graphite/5 hover:text-obsidian transition-colors"
+                >
+                  Mais Recentes
+                </Link>
+                <Link 
+                  href={buildSortUrl('price_asc')}
+                  className="block px-4 py-2.5 text-sm text-graphite hover:bg-graphite/5 hover:text-obsidian transition-colors"
+                >
+                  Preço: Menor para Maior
+                </Link>
+                <Link 
+                  href={buildSortUrl('price_desc')}
+                  className="block px-4 py-2.5 text-sm text-graphite hover:bg-graphite/5 hover:text-obsidian transition-colors"
+                >
+                  Preço: Maior para Menor
+                </Link>
+              </div>
+            </div>
           </nav>
 
           {/* Actions */}
@@ -111,6 +139,12 @@ export function Header() {
                           className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50/50 hover:text-red-700 transition-colors font-medium"
                         >
                           Sair da Conta
+                        </button>
+                        <button
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="w-full text-left px-4 py-2.5 text-sm text-obsidian hover:bg-graphite/5 transition-colors font-medium border-t border-graphite/5"
+                        >
+                          Cancelar
                         </button>
                       </div>
 
@@ -186,11 +220,11 @@ export function Header() {
         <>
           {/* Overlay */}
           <div 
-            className={`fixed inset-0 bg-obsidian/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            className={`md:hidden fixed inset-0 bg-obsidian/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             onClick={() => setIsMenuOpen(false)}
           />
           {/* Drawer */}
-          <div className={`fixed inset-y-0 left-0 w-80 max-w-[80vw] bg-ivory shadow-2xl z-50 transform transition-transform duration-300 flex flex-col ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <div className={`md:hidden fixed inset-y-0 left-0 w-80 max-w-[80vw] bg-ivory shadow-2xl z-50 transform transition-transform duration-300 flex flex-col ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="flex items-center justify-between p-6 border-b border-graphite/10">
               <span className="font-serif text-xl font-bold tracking-tighter text-obsidian">MENU</span>
               <button onClick={() => setIsMenuOpen(false)} className="p-2 -mr-2 text-obsidian hover:text-graphite transition-colors">
@@ -201,14 +235,16 @@ export function Header() {
             <div className="flex-1 overflow-y-auto py-4">
               <div className="px-6 space-y-1">
                 {/* Admin Link */}
-                <Link 
-                  href="/admin" 
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-3 py-3 text-obsidian font-medium hover:text-champagne transition-colors border-b border-graphite/5"
-                >
-                  <ShieldAlert size={18} />
-                  <span>Publicar Produtos (Admin)</span>
-                </Link>
+                {isAdmin && (
+                  <Link 
+                    href="/admin" 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-3 py-3 text-obsidian font-medium hover:text-champagne transition-colors border-b border-graphite/5"
+                  >
+                    <ShieldAlert size={18} />
+                    <span>Publicar Produtos</span>
+                  </Link>
+                )}
 
                 {/* Categories Accordion */}
                 <div className="border-b border-graphite/5">

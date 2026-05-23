@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Product } from '@/types';
+import { Skeleton } from './Skeleton';
 
 interface ProductCardProps {
   product: Product;
@@ -23,7 +24,7 @@ interface ProductCardProps {
  */
 export function ProductCard({
   product,
-  hoverScale = '125',
+  hoverScale = '150',
   showCategory = true,
   showPrice = true,
   currency = '$',
@@ -68,5 +69,23 @@ export function ProductCard({
         )}
       </div>
     </Link>
+  );
+}
+
+/**
+ * Skeleton loader that matches the ProductCard layout.
+ */
+export function ProductCardSkeleton() {
+  return (
+    <div className="flex flex-col">
+      <Skeleton className="aspect-[4/5] mb-4 w-full" />
+      <div className="flex justify-between items-start gap-4">
+        <div className="w-full">
+          <Skeleton className="h-6 w-3/4 mb-2" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+        <Skeleton className="h-6 w-1/4" />
+      </div>
+    </div>
   );
 }
