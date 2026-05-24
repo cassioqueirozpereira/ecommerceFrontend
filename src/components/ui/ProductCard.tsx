@@ -14,7 +14,7 @@ interface ProductCardProps {
   showCategory?: boolean;
   /** Show the price. @default true */
   showPrice?: boolean;
-  /** Currency symbol prefix. @default "$" */
+  /** Currency symbol prefix. @default "R$" */
   currency?: string;
 }
 
@@ -37,7 +37,7 @@ export function ProductCard({
   hoverScale = '150',
   showCategory = true,
   showPrice = true,
-  currency = '$',
+  currency = 'R$',
 }: ProductCardProps) {
   const scaleClass = hoverScaleClasses[hoverScale] || 'group-hover:scale-150';
 

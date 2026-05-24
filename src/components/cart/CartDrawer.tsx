@@ -125,7 +125,7 @@ export function CartDrawer() {
                   <p className="text-xs text-graphite">{item.variant.name}</p>
                   {/* Stock feedback */}
                   {item.variant.stock <= 5 && item.variant.stock > 0 ? (
-                    <p className="text-xs text-amber-600 font-medium">⚠️ Restam {item.variant.stock} em estoque</p>
+                    <p className="text-xs text-amber-600 font-medium">{item.variant.stock} disponível</p>
                   ) : item.variant.stock <= 0 ? (
                     <p className="text-xs text-red-500 font-medium">Produto esgotado</p>
                   ) : (
