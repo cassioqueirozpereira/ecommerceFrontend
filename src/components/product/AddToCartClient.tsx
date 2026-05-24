@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { Product, Variant } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { useCartStore } from '@/lib/store/cartStore';
@@ -16,10 +17,13 @@ export function AddToCartClient({ product }: Props) {
   const addItem = useCartStore((state) => state.addItem);
 
   const hasVariants = product.variants && product.variants.length > 1;
+  const isOutOfStock = !selectedVariant || selectedVariant.stock <= 0;
 
   const handleAddToCart = () => {
-    if (selectedVariant) {
-      addItem(product, selectedVariant, 1);
+    if (!selectedVariant) return;
+    const result = addItem(product, selectedVariant, 1);
+    if (!result.success && result.message) {
+      toast.error(result.message);
     }
   };
 
@@ -28,21 +32,28 @@ export function AddToCartClient({ product }: Props) {
       {/* Price & Installments */}
       <div>
         <p className="text-3xl font-serif tracking-tight text-obsidian">
-          ${selectedVariant ? selectedVariant.price.toFixed(2) : product.basePrice.toFixed(2)}
+          R${selectedVariant ? selectedVariant.price.toFixed(2) : product.basePrice.toFixed(2)}
         </p>
         <p className="text-sm text-graphite mt-1">
-          Ou em até 10x de ${( (selectedVariant?.price || product.basePrice) / 10 ).toFixed(2)} sem juros
+          Ou em até 10x de R${((selectedVariant?.price || product.basePrice) / 10).toFixed(2)} sem juros
         </p>
       </div>
 
-      {/* CTA (Mobile priority - comes before variants) */}
-      <Button 
-        size="lg" 
+      {/* Stock indicator */}
+      {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 5 && (
+        <p className="text-xs font-medium text-amber-600">
+          ⚠️ Restam apenas {selectedVariant.stock} unidade(s) em estoque!
+        </p>
+      )}
+
+      {/* CTA */}
+      <Button
+        size="lg"
         className="w-full font-serif tracking-wide text-lg"
         onClick={handleAddToCart}
-        disabled={!selectedVariant || selectedVariant.stock <= 0}
+        disabled={isOutOfStock}
       >
-        {selectedVariant?.stock > 0 ? 'Adicionar à Sacola' : 'Esgotado'}
+        {isOutOfStock ? 'Esgotado' : 'Adicionar à Sacola'}
       </Button>
 
       {/* Variants Selection */}
@@ -56,13 +67,17 @@ export function AddToCartClient({ product }: Props) {
               <button
                 key={variant.id}
                 onClick={() => setSelectedVariant(variant)}
+                disabled={variant.stock <= 0}
                 className={`px-4 py-2 text-sm border rounded-md transition-colors ${
-                  selectedVariant?.id === variant.id
+                  variant.stock <= 0
+                    ? 'border-graphite/10 text-graphite/30 cursor-not-allowed line-through'
+                    : selectedVariant?.id === variant.id
                     ? 'border-obsidian bg-obsidian text-ivory'
                     : 'border-graphite/20 text-obsidian hover:border-graphite/50'
                 }`}
               >
                 {variant.name}
+                {variant.stock <= 0 && ' (Esgotado)'}
               </button>
             ))}
           </div>

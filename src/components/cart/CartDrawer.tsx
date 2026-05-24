@@ -80,7 +80,7 @@ export function CartDrawer() {
       />
       <div className="fixed inset-y-0 right-0 w-full max-w-md bg-ivory shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out border-l border-graphite/10">
         <div className="flex items-center justify-between p-6 border-b border-graphite/10">
-          <h2 className="text-xl font-serif text-obsidian tracking-tight">Your Cart</h2>
+          <h2 className="text-xl font-serif text-obsidian tracking-tight">Seu Carrinho</h2>
           <button 
             onClick={() => setIsOpen(false)}
             className="p-2 text-graphite hover:text-obsidian transition-colors rounded-full hover:bg-graphite/5"
@@ -93,9 +93,9 @@ export function CartDrawer() {
           {items.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
               <ShoppingBag size={48} className="text-graphite/30" />
-              <p className="text-graphite">Your cart is empty.</p>
+              <p className="text-graphite">Seu carrinho está vazio.</p>
               <Button variant="outline" onClick={() => setIsOpen(false)}>
-                Continue Shopping
+                Continuar Comprando
               </Button>
             </div>
           ) : (
@@ -123,24 +123,35 @@ export function CartDrawer() {
                     </button>
                   </div>
                   <p className="text-xs text-graphite">{item.variant.name}</p>
+                  {/* Stock feedback */}
+                  {item.variant.stock <= 5 && item.variant.stock > 0 ? (
+                    <p className="text-xs text-amber-600 font-medium">⚠️ Restam {item.variant.stock} em estoque</p>
+                  ) : item.variant.stock <= 0 ? (
+                    <p className="text-xs text-red-500 font-medium">Produto esgotado</p>
+                  ) : (
+                    <p className="text-xs text-graphite/50">{item.variant.stock} disponíveis</p>
+                  )}
                   <div className="mt-auto flex items-center justify-between pt-2">
                     <div className="flex items-center border border-graphite/20 rounded-md">
                       <button 
-                        className="px-2 py-1 text-graphite hover:text-obsidian"
-                        onClick={() => updateQuantity(item.variant.id, Math.max(1, item.quantity - 1))}
+                        className="px-2 py-1 text-graphite hover:text-obsidian disabled:opacity-30"
+                        onClick={() => updateQuantity(item.variant.id, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
                       >
                         <Minus size={14} />
                       </button>
-                      <span className="px-2 text-sm">{item.quantity}</span>
+                      <span className="px-2 text-sm min-w-[2rem] text-center">{item.quantity}</span>
                       <button 
-                        className="px-2 py-1 text-graphite hover:text-obsidian"
+                        className="px-2 py-1 text-graphite hover:text-obsidian disabled:opacity-30"
                         onClick={() => updateQuantity(item.variant.id, item.quantity + 1)}
+                        disabled={item.quantity >= item.variant.stock}
+                        title={item.quantity >= item.variant.stock ? `Máximo em estoque: ${item.variant.stock}` : ''}
                       >
                         <Plus size={14} />
                       </button>
                     </div>
                     <span className="font-medium text-sm">
-                      ${(item.variant.price * item.quantity).toFixed(2)}
+                      R${(item.variant.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -153,16 +164,15 @@ export function CartDrawer() {
           <div className="border-t border-graphite/10 p-6 bg-ivory space-y-4">
             <div className="flex justify-between items-center text-sm">
               <span className="text-graphite">Subtotal</span>
-              <span className="font-medium text-obsidian">${getCartTotal().toFixed(2)}</span>
+              <span className="font-medium text-obsidian">R${getCartTotal().toFixed(2)}</span>
             </div>
-            <p className="text-xs text-graphite">Shipping and taxes calculated at checkout.</p>
             <Button 
               size="full" 
               className="font-serif tracking-wide"
               onClick={handleCheckout}
               disabled={isCheckingOut}
             >
-              {isCheckingOut ? 'Processando...' : 'Finalizar Compra (Checkout)'}
+              {isCheckingOut ? 'Processando...' : 'Comprar'}
             </Button>
           </div>
         )}
