@@ -78,7 +78,10 @@ export function CartDrawer() {
   };
 
   const handleCardCheckout = async () => {
-    if (!token) return;
+    if (!token) {
+      toast.error('Erro de autenticação. Faça login novamente.');
+      return;
+    }
     setIsCheckingOut(true);
     const toastId = toast.loading('Processando seu pedido...');
     try {
@@ -294,7 +297,7 @@ export function CartDrawer() {
               </div>
               <div>
                 <p className="font-semibold text-obsidian text-sm">Cartão de Crédito</p>
-                <p className="text-xs text-graphite mt-0.5">Pague com segurança via Mercado Pago</p>
+                <p className="text-xs text-graphite mt-0.5">Pague com segurança</p>
               </div>
             </button>
 
@@ -307,22 +310,23 @@ export function CartDrawer() {
                 <QrCode size={24} className="text-emerald-700" />
               </div>
               <div>
-                <p className="font-semibold text-obsidian text-sm">Pix Manual</p>
-                <p className="text-xs text-graphite mt-0.5">Zero taxas · Aprovação em minutos</p>
+                <p className="font-semibold text-obsidian text-sm">Pix</p>
+                <p className="text-xs text-graphite mt-0.5">Zero taxas</p>
               </div>
             </button>
 
-            <div className="mt-auto p-4 bg-amber-50 rounded-xl border border-amber-200">
-              <p className="text-xs text-amber-800 font-medium">Chave Pix da loja:</p>
-              <p className="text-sm font-mono text-amber-900 mt-1 select-all">41988171218</p>
-              <p className="text-xs text-amber-700 mt-1">Total: <strong>R${getCartTotal().toFixed(2)}</strong></p>
-            </div>
           </div>
         )}
 
         {/* ── STEP: PIX FORM ── */}
         {step === 'pix-form' && (
           <div className="flex-1 overflow-y-auto p-6 space-y-5">
+            <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+              <p className="text-xs text-amber-800 font-medium">Chave Pix da loja:</p>
+              <p className="text-sm font-mono text-amber-900 mt-1 select-all">41988171218</p>
+              <p className="text-xs text-amber-700 mt-1">Total: <strong>R${getCartTotal().toFixed(2)}</strong></p>
+            </div>
+
             <p className="text-sm text-graphite">
               Após realizar o Pix, preencha os dados e anexe o comprovante:
             </p>
