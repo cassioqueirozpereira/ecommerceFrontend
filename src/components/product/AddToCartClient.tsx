@@ -42,7 +42,7 @@ export function AddToCartClient({ product }: Props) {
       {/* Stock indicator */}
       {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 5 && (
         <p className="text-xs font-medium text-amber-600">
-          ⚠️ Restam apenas {selectedVariant.stock} unidade(s) em estoque!
+          {selectedVariant.stock} disponível
         </p>
       )}
 

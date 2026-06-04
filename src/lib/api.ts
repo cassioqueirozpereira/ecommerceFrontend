@@ -174,3 +174,74 @@ export async function getPaymentLink(orderId: string, token: string): Promise<st
   const data = await res.json();
   return data.paymentUrl;
 }
+
+export async function submitPixOrder(
+  data: {
+    items: { productId: string; variantId: string; quantity: number }[];
+    paymentMethod: 'PIX_MANUAL';
+    payerName: string;
+    payerCpf: string;
+    payerPhone: string;
+    pixReceiptUrl: string;
+  },
+  token: string,
+  idempotencyKey: string
+) {
+  const res = await fetch(`${API_BASE_URL}/orders`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Idempotency-Key': idempotencyKey,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao registrar pedido Pix');
+  }
+
+  return res.json();
+}
+
+export async function getAdminPendingPixOrders(token: string) {
+  const res = await fetch(`${API_BASE_URL}/orders/admin/pending-pix`, {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao buscar pedidos pendentes');
+  }
+
+  return res.json();
+}
+
+export async function approvePixOrder(orderId: string, token: string) {
+  const res = await fetch(`${API_BASE_URL}/orders/admin/${orderId}/approve-pix`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao aprovar pedido');
+  }
+
+  return res.json();
+}
+
+export async function rejectPixOrder(orderId: string, token: string) {
+  const res = await fetch(`${API_BASE_URL}/orders/admin/${orderId}/reject-pix`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao rejeitar pedido');
+  }
+
+  return res.json();
+}

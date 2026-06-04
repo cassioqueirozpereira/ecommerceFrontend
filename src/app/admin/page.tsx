@@ -3,12 +3,12 @@
 // Trigger rebuild on Vercel
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, ImageIcon, Package, ChevronDown, AlertCircle, Loader2, Upload, Key, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, ImageIcon, Package, ChevronDown, AlertCircle, Loader2, Upload, CheckCircle2, Clock, CheckCheck, XCircle, Eye } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { FormField } from '@/components/ui/FormField';
 import { LoadingButton } from '@/components/ui/LoadingButton';
 import { useAuthStore } from '@/store/authStore';
-import { createProduct, getCloudinarySignature } from '@/lib/api';
+import { createProduct, getCloudinarySignature, getAdminPendingPixOrders, approvePixOrder, rejectPixOrder } from '@/lib/api';
 import { toast } from 'sonner';
 
 interface VariantForm {
@@ -105,25 +105,78 @@ export default function AdminPage() {
     { id: uid(), sku: '', name: '', price: '', stock: '' },
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const isSubmittingRef = useRef(false); // Prevents double-submit
+  const isSubmittingRef = useRef(false);
 
   const [isUploading, setIsUploading] = useState(false);
+
+  // Pix pending orders
+  const [pixOrders, setPixOrders] = useState<any[]>([]);
+  const [loadingPixOrders, setLoadingPixOrders] = useState(false);
+  const [pixActionId, setPixActionId] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Redirect if not authenticated (client-side guard)
   useEffect(() => {
     if (mounted && !isAuthenticated) {
       router.push('/login');
     }
   }, [mounted, isAuthenticated, router]);
 
+  useEffect(() => {
+    if (mounted && isAuthenticated && token) {
+      fetchPixOrders();
+    }
+  }, [mounted, isAuthenticated, token]);
+
   // Auto-generate slug from name
   useEffect(() => {
     setSlug(generateSlug(name));
   }, [name]);
+
+  const fetchPixOrders = async () => {
+    if (!token) return;
+    setLoadingPixOrders(true);
+    try {
+      const orders = await getAdminPendingPixOrders(token);
+      setPixOrders(orders);
+    } catch {
+      // non-admin users will get 403, silently ignore
+    } finally {
+      setLoadingPixOrders(false);
+    }
+  };
+
+
+  const handleApprove = async (orderId: string) => {
+    if (!token) return;
+    setPixActionId(orderId);
+    try {
+      await approvePixOrder(orderId, token);
+      toast.success('Pedido aprovado!');
+      setPixOrders((prev) => prev.filter((o) => o.id !== orderId));
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao aprovar pedido');
+    } finally {
+      setPixActionId(null);
+    }
+  };
+
+  const handleReject = async (orderId: string) => {
+    if (!token) return;
+    setPixActionId(orderId);
+    try {
+      await rejectPixOrder(orderId, token);
+      toast.success('Pedido rejeitado e estoque restaurado.');
+      setPixOrders((prev) => prev.filter((o) => o.id !== orderId));
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao rejeitar pedido');
+    } finally {
+      setPixActionId(null);
+    }
+  };
 
   if (!mounted || !isAuthenticated) {
     return (
@@ -305,6 +358,105 @@ export default function AdminPage() {
             Preencha os dados abaixo para adicionar um produto ao catálogo.
           </p>
         </div>
+
+        {/* ── Pix Pending Orders Panel ── */}
+        {(loadingPixOrders || pixOrders.length > 0) && (
+          <section className="mb-12 pb-12 border-b border-obsidian/10">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-graphite flex items-center gap-2">
+                <Clock size={14} className="text-amber-600" />
+                Pedidos Pix Pendentes
+                {pixOrders.length > 0 && (
+                  <span className="ml-1 px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-[10px] font-bold">
+                    {pixOrders.length}
+                  </span>
+                )}
+              </h2>
+              <button
+                onClick={fetchPixOrders}
+                className="text-xs text-graphite hover:text-obsidian transition-colors underline"
+              >
+                Atualizar
+              </button>
+            </div>
+
+            {loadingPixOrders ? (
+              <div className="flex items-center gap-2 text-graphite text-sm">
+                <Loader2 size={16} className="animate-spin" /> Carregando pedidos...
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {pixOrders.map((order: any) => (
+                  <div key={order.id} className="border border-amber-200 bg-amber-50/50 rounded-xl p-5 space-y-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <p className="text-xs font-bold text-obsidian uppercase tracking-wide">
+                          {order.payerName || '—'}
+                        </p>
+                        <p className="text-xs text-graphite font-mono">
+                          CPF: {order.payerCpf || '—'} · Tel: {order.payerPhone || '—'}
+                        </p>
+                        <p className="text-xs text-graphite/60 truncate">
+                          Pedido #{order.id?.slice(0, 8)}...
+                        </p>
+                        <p className="text-sm font-semibold text-obsidian">
+                          R$ {Number(order.total ?? 0).toFixed(2)}
+                        </p>
+                      </div>
+
+                      {order.pixReceiptUrl && (
+                        <button
+                          onClick={() => setPreviewUrl(previewUrl === order.pixReceiptUrl ? null : order.pixReceiptUrl)}
+                          className="flex items-center gap-1.5 px-3 py-2 text-xs bg-white border border-graphite/20 rounded-lg hover:border-obsidian transition-colors flex-shrink-0"
+                        >
+                          <Eye size={14} />
+                          Comprovante
+                        </button>
+                      )}
+                    </div>
+
+                    {previewUrl === order.pixReceiptUrl && (
+                      <div className="rounded-lg overflow-hidden border border-graphite/20">
+                        <img
+                          src={order.pixReceiptUrl}
+                          alt="Comprovante"
+                          className="w-full max-h-72 object-contain bg-white"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex gap-3 pt-1">
+                      <button
+                        onClick={() => handleApprove(order.id)}
+                        disabled={pixActionId === order.id}
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-60"
+                      >
+                        {pixActionId === order.id ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <CheckCheck size={14} />
+                        )}
+                        Aprovar
+                      </button>
+                      <button
+                        onClick={() => handleReject(order.id)}
+                        disabled={pixActionId === order.id}
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-red-300 hover:bg-red-50 text-red-600 text-xs font-semibold rounded-lg transition-colors disabled:opacity-60"
+                      >
+                        {pixActionId === order.id ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <XCircle size={14} />
+                        )}
+                        Rejeitar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-12">
 
