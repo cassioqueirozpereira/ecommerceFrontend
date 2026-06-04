@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Product, Variant } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { useCartStore } from '@/lib/store/cartStore';

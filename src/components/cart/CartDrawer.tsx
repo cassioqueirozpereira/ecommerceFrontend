@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 import { ShoppingBag, X, Minus, Plus, Trash2, CreditCard, QrCode, Upload, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
