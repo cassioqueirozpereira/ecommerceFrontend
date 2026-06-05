@@ -62,6 +62,7 @@ export default function CheckoutPage() {
         }
       };
 
+      console.log('[Checkout] Sending payload:', JSON.stringify(payload));
       await createOrder(payload, token, idempotencyKey);
       
       toast.success('Pagamento aprovado! Seu pedido foi confirmado.', { id: toastId });
