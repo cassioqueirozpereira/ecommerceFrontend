@@ -63,9 +63,14 @@ export default function CheckoutPage() {
       };
 
       console.log('[Checkout] Sending payload:', JSON.stringify(payload));
-      await createOrder(payload, token, idempotencyKey);
+      const order = await createOrder(payload, token, idempotencyKey);
       
-      toast.success('Pagamento aprovado! Seu pedido foi confirmado.', { id: toastId });
+      if (order.status === 'PENDING_PAYMENT') {
+        toast.success('Seu pagamento está em análise.', { id: toastId });
+      } else {
+        toast.success('Pagamento aprovado! Seu pedido foi confirmado.', { id: toastId });
+      }
+      
       clearCart();
       router.push('/profile/orders'); // Assuming there's an orders page or just redirect to home
       

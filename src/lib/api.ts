@@ -152,7 +152,8 @@ export async function createOrder(data: any, token: string, idempotencyKey: stri
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Falha ao criar o pedido');
+    const errorMessage = errorData.message || errorData.detail || errorData.title || 'Falha ao criar o pedido';
+    throw new Error(errorMessage);
   }
 
   return res.json();
