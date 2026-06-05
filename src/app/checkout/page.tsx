@@ -75,7 +75,9 @@ export default function CheckoutPage() {
       router.push('/profile/orders'); // Assuming there's an orders page or just redirect to home
       
     } catch (error: any) {
-      toast.error(error.message || 'Falha ao processar o pagamento.', { id: toastId });
+      console.error('[Checkout Error]', error);
+      const msg = error?.message || (typeof error === 'string' ? error : 'Falha ao processar o pagamento.');
+      toast.error(msg, { id: toastId });
     } finally {
       setIsProcessing(false);
     }
