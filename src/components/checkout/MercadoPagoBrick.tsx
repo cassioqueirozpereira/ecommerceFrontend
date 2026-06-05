@@ -35,11 +35,6 @@ export function MercadoPagoBrick({ amount, onSubmit, onError }: MercadoPagoBrick
     paymentMethods: {
       creditCard: 'all' as const,
       debitCard: 'all' as const,
-      ticket: 'all' as const,
-      bankTransfer: 'all' as const,
-      atm: 'all' as const,
-      onboarding_credits: 'all' as const,
-      wallet_purchase: 'all' as const,
       maxInstallments: 12,
     },
     visual: {
@@ -56,7 +51,10 @@ export function MercadoPagoBrick({ amount, onSubmit, onError }: MercadoPagoBrick
         customization={customization}
         onSubmit={async (param: any) => {
           try {
-            await onSubmit(param);
+            // The Brick wraps the real data inside `formData`
+            const formData = param?.formData ?? param;
+            console.log('[MP Brick] onSubmit raw param:', JSON.stringify(param));
+            await onSubmit(formData);
           } catch (error) {
             onError(error);
           }

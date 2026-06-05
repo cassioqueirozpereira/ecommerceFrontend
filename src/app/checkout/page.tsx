@@ -28,7 +28,7 @@ export default function CheckoutPage() {
     return null;
   }
 
-  const handlePaymentSubmit = async (paymentData: any) => {
+  const handlePaymentSubmit = async (formData: any) => {
     if (!token) {
       toast.error('Erro de autenticação. Faça login novamente.');
       return;
@@ -48,15 +48,15 @@ export default function CheckoutPage() {
         })),
         paymentMethod: 'MERCADO_PAGO_CARD',
         cardPayment: {
-          token: paymentData.token,
-          installments: paymentData.installments,
-          issuerId: paymentData.issuer_id,
-          paymentMethodId: paymentData.payment_method_id,
+          token: formData.token,
+          installments: formData.installments,
+          issuerId: formData.issuer_id,
+          paymentMethodId: formData.payment_method_id,
           payer: {
-            email: paymentData.payer.email,
+            email: formData.payer?.email ?? '',
             identification: {
-              type: paymentData.payer.identification.type,
-              number: paymentData.payer.identification.number,
+              type: formData.payer?.identification?.type ?? 'CPF',
+              number: formData.payer?.identification?.number ?? '',
             }
           }
         }
