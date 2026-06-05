@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { ShoppingBag, X, Minus, Plus, Trash2, CreditCard, QrCode, Upload, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
-import { createOrder, getPaymentLink, submitPixOrder, getCloudinarySignature } from '@/lib/api';
+import { createOrder, submitPixOrder, getCloudinarySignature } from '@/lib/api';
 import { Button } from '../ui/Button';
 
 type PaymentStep = 'cart' | 'payment-method' | 'pix-form';
@@ -77,36 +77,13 @@ export function CartDrawer() {
     }
   };
 
-  const handleCardCheckout = async () => {
+  const handleCardCheckout = () => {
     if (!token) {
       toast.error('Erro de autenticação. Faça login novamente.');
       return;
     }
-    setIsCheckingOut(true);
-    const toastId = toast.loading('Processando seu pedido...');
-    try {
-      const idempotencyKey = crypto.randomUUID();
-      const payload = {
-        items: items.map((item) => ({
-          productId: item.product.id,
-          variantId: item.variant.id,
-          quantity: item.quantity,
-        })),
-        paymentMethod: 'MERCADO_PAGO_CARD',
-      };
-
-      const order = await createOrder(payload, token, idempotencyKey);
-      toast.loading('Preparando link de pagamento...', { id: toastId });
-      const paymentUrl = await getPaymentLink(order.id, token);
-      toast.success('Pedido criado! Redirecionando...', { id: toastId });
-      clearCart();
-      handleClose();
-      setTimeout(() => { window.location.href = paymentUrl; }, 500);
-    } catch (err: any) {
-      toast.error(err.message || 'Falha ao processar checkout.', { id: toastId });
-    } finally {
-      setIsCheckingOut(false);
-    }
+    handleClose();
+    router.push('/checkout');
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

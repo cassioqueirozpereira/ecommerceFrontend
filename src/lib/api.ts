@@ -158,22 +158,7 @@ export async function createOrder(data: any, token: string, idempotencyKey: stri
   return res.json();
 }
 
-export async function getPaymentLink(orderId: string, token: string): Promise<string> {
-  const res = await fetch(`${API_BASE_URL}/orders/${orderId}/pay`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Falha ao obter link de pagamento');
-  }
-
-  const data = await res.json();
-  return data.paymentUrl;
-}
 
 export async function submitPixOrder(
   data: {
