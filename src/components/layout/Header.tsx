@@ -130,6 +130,16 @@ export function Header() {
                             {user?.firstName ? `Olá, ${user.firstName}` : user?.email}
                           </p>
                         </div>
+                        {isAdmin && (
+                          <Link
+                            href="/admin"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm text-obsidian hover:bg-graphite/5 transition-colors font-medium border-b border-graphite/5"
+                          >
+                            <ShieldAlert size={16} />
+                            Painel Admin
+                          </Link>
+                        )}
                         <button
                           onClick={() => {
                             logout();
@@ -164,6 +174,16 @@ export function Header() {
                               </p>
                             </div>
                             <div className="space-y-3">
+                              {isAdmin && (
+                                <Link
+                                  href="/admin"
+                                  onClick={() => setIsUserMenuOpen(false)}
+                                  className="flex items-center justify-center gap-2 w-full h-12 border border-obsidian text-obsidian hover:bg-obsidian hover:text-ivory rounded-md font-medium transition-colors text-sm"
+                                >
+                                  <ShieldAlert size={18} />
+                                  Painel Admin
+                                </Link>
+                              )}
                               <button
                                 onClick={() => {
                                   logout();
