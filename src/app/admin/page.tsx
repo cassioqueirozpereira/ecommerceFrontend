@@ -724,8 +724,8 @@ export default function AdminPage() {
           </section>
 
           {/* Info box */}
-          <div className="flex gap-3 p-4 border border-champagne/30 rounded-lg bg-champagne/5">
-            <AlertCircle size={16} className="text-champagne flex-shrink-0 mt-0.5" />
+          <div className="flex gap-3 p-4 border border-blush/30 rounded-lg bg-blush/5">
+            <AlertCircle size={16} className="text-blush flex-shrink-0 mt-0.5" />
             <p className="text-xs text-graphite/70 leading-relaxed">
               <strong className="text-obsidian">Permissão necessária:</strong> Esta ação requer que sua conta tenha o papel <code className="bg-obsidian/5 px-1 rounded text-obsidian">ROLE_ADMIN</code> no banco de dados. Contas comuns receberão um erro 403.
             </p>

@@ -61,14 +61,14 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       
       <div className={`relative w-full max-w-2xl px-4 transition-transform duration-300 ease-out ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}>
         <form onSubmit={handleSubmit} className="relative flex items-center w-full group">
-          <Search className="absolute left-8 text-ivory/50 transition-colors group-focus-within:text-champagne" size={24} />
+          <Search className="absolute left-8 text-ivory/50 transition-colors group-focus-within:text-blush" size={24} />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="O que você está procurando?"
-            className="w-full bg-obsidian border border-ivory/20 rounded-[2rem] py-4 pl-16 pr-16 text-lg text-ivory placeholder-ivory/50 focus:outline-none focus:border-champagne shadow-2xl transition-all"
+            className="w-full bg-obsidian border border-ivory/20 rounded-[2rem] py-4 pl-16 pr-16 text-lg text-ivory placeholder-ivory/50 focus:outline-none focus:border-blush shadow-2xl transition-all"
           />
           <button 
             type="button"

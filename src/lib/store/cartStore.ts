@@ -79,7 +79,7 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name: 'luxe-cart-storage',
+      name: 'vsbeauty-cart-storage',
       partialize: (state) => ({ items: state.items }),
     }
   )

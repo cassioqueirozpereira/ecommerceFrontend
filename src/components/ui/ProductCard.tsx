@@ -63,7 +63,7 @@ export function ProductCard({
       {/* Info */}
       <div className="flex justify-between items-start gap-4">
         <div>
-          <h3 className="font-medium text-lg leading-tight group-hover:text-champagne transition-colors">
+          <h3 className="font-medium text-lg leading-tight group-hover:text-blush transition-colors">
             {product.name}
           </h3>
           {showCategory && (

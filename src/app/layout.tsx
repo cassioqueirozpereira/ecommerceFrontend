@@ -18,8 +18,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Luxe Beauty",
-    default: "Luxe Beauty | Neo-Premium E-commerce",
+    template: "%s | VS BEAUTY",
+    default: "VS BEAUTY | Neo-Premium E-commerce",
   },
   description: "Experience the finest selection of luxury beauty products.",
 };
@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="font-sans flex flex-col min-h-screen bg-ivory text-obsidian selection:bg-champagne selection:text-ivory">
+      <body className="font-sans flex flex-col min-h-screen bg-ivory text-obsidian selection:bg-blush selection:text-ivory">
         <Header />
         <CartDrawer />
         <main className="flex-grow">{children}</main>

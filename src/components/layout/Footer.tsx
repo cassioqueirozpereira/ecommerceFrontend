@@ -9,7 +9,7 @@ export function Footer() {
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-1">
-            <h2 className="font-serif text-2xl font-bold tracking-tighter mb-4">LUXE</h2>
+            <h2 className="font-serif text-2xl font-bold tracking-tighter mb-4">VS BEAUTY</h2>
             <p className="text-sm text-ivory/60 max-w-xs">
               Trazendo o auge do autocuidado e da beleza para a sua rotina. Eleve sua presença.
             </p>
@@ -43,7 +43,7 @@ export function Footer() {
 
         <div className="pt-8 border-t border-ivory/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-ivory/40">
-            &copy; {new Date().getFullYear()} LUXE Beauty. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} VS BEAUTY. Todos os direitos reservados.
           </p>
           <div className="flex gap-6">
             <Link href="#" className="text-xs text-ivory/40 hover:text-ivory transition-colors">Política de Privacidade</Link>

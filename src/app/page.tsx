@@ -15,7 +15,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero Section - Midnight Luxe Preset B */}
+      {/* Hero Section - Midnight VS BEAUTY Preset B */}
       <section className="relative h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-obsidian text-ivory">
         {/* Abstract dark luxury background placeholder */}
         <div className="absolute inset-0 z-0">
@@ -28,8 +28,8 @@ export default async function HomePage() {
         </div>
         
         <Container className="relative z-20 text-center flex flex-col items-center">
-          <span className="text-champagne tracking-[0.2em] text-sm md:text-base font-medium mb-6 uppercase">
-            A Nova Era da Beleza
+          <span className="text-blush tracking-[0.2em] text-sm md:text-base font-medium mb-6 uppercase">
+            Sua essência. Seu cuidado. Sua beleza. 
           </span>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tighter mb-6 max-w-4xl text-balance">
             Onde os melhores produtos <br/>
@@ -99,7 +99,7 @@ export default async function HomePage() {
               <div className="absolute bottom-0 left-0 p-8 md:p-12">
                 <h3 className="font-serif text-3xl mb-2">Essência</h3>
                 <p className="text-ivory/70 mb-4 max-w-sm">Perfumes que redefinem a sofisticação moderna.</p>
-                <span className="inline-block border-b border-champagne text-champagne pb-1">Comprar Perfumes</span>
+                <span className="inline-block border-b border-blush text-blush pb-1">Comprar Perfumes</span>
               </div>
             </Link>
             <div className="grid grid-rows-2 gap-4">
@@ -112,13 +112,13 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-obsidian/90 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-8">
                   <h3 className="font-serif text-2xl mb-2">Rituais</h3>
-                  <span className="inline-block border-b border-champagne text-champagne pb-1">Cuidados com a pele</span>
+                  <span className="inline-block border-b border-blush text-blush pb-1">Cuidados com a pele</span>
                 </div>
               </Link>
               <Link href="/products?category=kits-e-presentes" className="group relative rounded-lg overflow-hidden h-[300px] md:h-auto bg-obsidian flex items-center justify-center">
                 <div className="text-center p-8 z-10">
                   <h3 className="font-serif text-3xl italic mb-4">A Arte de Presentear</h3>
-                  <Button variant="outline" className="border-champagne text-champagne hover:bg-champagne hover:text-obsidian">
+                  <Button variant="outline" className="border-blush text-blush hover:bg-blush hover:text-obsidian">
                     Descobrir Kits
                   </Button>
                 </div>

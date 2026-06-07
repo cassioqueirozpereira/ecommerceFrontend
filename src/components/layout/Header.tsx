@@ -22,7 +22,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   
-  const isAdmin = isAuthenticated && (user?.roles?.includes('ROLE_ADMIN') || user?.role === 'ROLE_ADMIN' || user?.role === 'ADMIN' || user?.email?.toLowerCase() === 'admin@luxe.com');
+  const isAdmin = isAuthenticated && (user?.roles?.includes('ROLE_ADMIN') || user?.role === 'ROLE_ADMIN' || user?.role === 'ADMIN' || user?.email?.toLowerCase() === 'admin@vsbeauty.com');
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export function Header() {
             </button>
             <Link href="/" className="flex-shrink-0">
               <h1 className="font-serif text-2xl font-bold tracking-tighter text-obsidian">
-                LUXE
+                VS BEAUTY
               </h1>
             </Link>
           </div>
@@ -114,7 +114,7 @@ export function Header() {
                     aria-label="Menu da conta"
                   >
                     {/* Dynamic circular letter-avatar */}
-                    <div className="h-8 w-8 rounded-full bg-champagne text-obsidian flex items-center justify-center text-sm font-semibold tracking-wider border border-obsidian/10 shadow-sm transition-transform duration-300 hover:scale-105">
+                    <div className="h-8 w-8 rounded-full bg-blush text-obsidian flex items-center justify-center text-sm font-semibold tracking-wider border border-obsidian/10 shadow-sm transition-transform duration-300 hover:scale-105">
                       {user?.firstName ? user.firstName[0].toUpperCase() : (user?.email ? user.email[0].toUpperCase() : 'U')}
                     </div>
                   </button>
@@ -239,7 +239,7 @@ export function Header() {
                   <Link 
                     href="/admin" 
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-3 py-3 text-obsidian font-medium hover:text-champagne transition-colors border-b border-graphite/5"
+                    className="flex items-center gap-3 py-3 text-obsidian font-medium hover:text-blush transition-colors border-b border-graphite/5"
                   >
                     <ShieldAlert size={18} />
                     <span>Publicar Produtos</span>
@@ -250,7 +250,7 @@ export function Header() {
                 <div className="border-b border-graphite/5">
                   <button 
                     onClick={() => toggleAccordion('categories')}
-                    className="w-full flex items-center justify-between py-4 text-obsidian font-medium hover:text-champagne transition-colors"
+                    className="w-full flex items-center justify-between py-4 text-obsidian font-medium hover:text-blush transition-colors"
                   >
                     <span>Categorias</span>
                     {openAccordion === 'categories' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -276,7 +276,7 @@ export function Header() {
                 <div className="border-b border-graphite/5">
                   <button 
                     onClick={() => toggleAccordion('sort')}
-                    className="w-full flex items-center justify-between py-4 text-obsidian font-medium hover:text-champagne transition-colors"
+                    className="w-full flex items-center justify-between py-4 text-obsidian font-medium hover:text-blush transition-colors"
                   >
                     <span>Ordenar por</span>
                     {openAccordion === 'sort' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -318,7 +318,7 @@ export function Header() {
             
             {/* Drawer Footer */}
             <div className="p-6 border-t border-graphite/10 bg-ivory/50">
-              <p className="text-xs text-graphite/60 text-center tracking-widest uppercase">LUXE Beauty</p>
+              <p className="text-xs text-graphite/60 text-center tracking-widest uppercase">VS BEAUTY</p>
             </div>
           </div>
         </>,

@@ -5,7 +5,7 @@ import { ProductCard } from '@/components/ui/ProductCard';
 import { getProducts } from '@/lib/api';
 
 export const metadata = {
-  title: 'Coleção | Luxe Beauty',
+  title: 'Coleção | VS BEAUTY',
   description: 'Explore nossa coleção premium de produtos de beleza e perfumaria.',
 };
 
@@ -45,7 +45,7 @@ export default async function ProductsPage({
             <div className="mb-6 flex justify-between items-center text-sm text-graphite border-b border-graphite/10 pb-4">
               <span>{products.length} {products.length === 1 ? 'produto' : 'produtos'}</span>
               {searchQuery && (
-                <Link href="/products" className="text-champagne hover:text-champagne/80 font-medium transition-colors">
+                <Link href="/products" className="text-blush hover:text-blush/80 font-medium transition-colors">
                   Ver todos os produtos
                 </Link>
               )}
@@ -61,7 +61,7 @@ export default async function ProductsPage({
               <div className="py-24 text-center">
                 <h3 className="text-xl font-serif mb-2">Nenhum produto encontrado</h3>
                 <p className="text-graphite mb-6">Tente ajustar seus filtros de busca ou termos pesquisados.</p>
-                <Link href="/products" className="text-champagne border-b border-champagne pb-1">
+                <Link href="/products" className="text-blush border-b border-blush pb-1">
                   Limpar todos os filtros
                 </Link>
               </div>

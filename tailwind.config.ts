@@ -12,8 +12,8 @@ const config: Config = {
         obsidian: "#0D0D12",
         graphite: "#2A2A35",
         ivory: "#FAF8F5",
-        champagne: "#C9A84C",
-        "champagne-dark": "#b0913e",
+        blush: "#f5c7c7",
+        "blush-dark": "#e89595",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
