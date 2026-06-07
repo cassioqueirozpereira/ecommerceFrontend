@@ -2,13 +2,13 @@
 
 // Trigger rebuild on Vercel
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { Plus, Trash2, ImageIcon, Package, ChevronDown, AlertCircle, Loader2, Upload, CheckCircle2, Clock, CheckCheck, XCircle, Eye } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { Plus, Trash2, ImageIcon, Package, ChevronDown, AlertCircle, Loader2, Upload, CheckCircle2 } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { FormField } from '@/components/ui/FormField';
 import { LoadingButton } from '@/components/ui/LoadingButton';
 import { useAuthStore } from '@/store/authStore';
-import { createProduct, getCloudinarySignature, getAdminPendingPixOrders, approvePixOrder, rejectPixOrder } from '@/lib/api';
+import { getCloudinarySignature, getProductBySlug, updateProduct } from '@/lib/api';
 import { toast } from 'sonner';
 
 interface VariantForm {
@@ -88,12 +88,15 @@ const inputClass =
 const labelClass =
   'block text-[10px] font-semibold uppercase tracking-widest text-graphite mb-1.5';
 
-export default function AdminPage() {
+export default function EditProductPage() {
   const router = useRouter();
+  const params = useParams();
+  const slugParam = typeof params.slug === 'string' ? params.slug : params.slug?.[0];
   const { isAuthenticated, token, user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
 
   // Form state
+  const [productId, setProductId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
@@ -109,11 +112,7 @@ export default function AdminPage() {
 
   const [isUploading, setIsUploading] = useState(false);
 
-  // Pix pending orders
-  const [pixOrders, setPixOrders] = useState<any[]>([]);
-  const [loadingPixOrders, setLoadingPixOrders] = useState(false);
-  const [pixActionId, setPixActionId] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Remove pix orders state
 
   useEffect(() => {
     setMounted(true);
@@ -126,57 +125,49 @@ export default function AdminPage() {
   }, [mounted, isAuthenticated, router]);
 
   useEffect(() => {
-    if (mounted && isAuthenticated && token) {
-      fetchPixOrders();
+    if (mounted && isAuthenticated && token && slugParam) {
+      fetchProduct();
     }
-  }, [mounted, isAuthenticated, token]);
+  }, [mounted, isAuthenticated, token, slugParam]);
+
+  const fetchProduct = async () => {
+    try {
+      const p = await getProductBySlug(slugParam!);
+      if (p) {
+        setProductId(p.id);
+        setName(p.name);
+        setSlug(p.slug);
+        setDescription(p.description || '');
+        setBasePrice(p.basePrice?.toString() || '');
+        setPromotionalPrice(p.promotionalPrice?.toString() || '');
+        setCategoryId(p.category?.id || 1);
+        if (p.images && p.images.length > 0) {
+          setImages([...p.images, '']); // trailing empty for manual input
+        }
+        if (p.variants && p.variants.length > 0) {
+          setVariants(p.variants.map(v => ({
+            id: uid(),
+            sku: v.sku,
+            name: v.name,
+            price: v.price?.toString() || '',
+            stock: v.stock?.toString() || '0'
+          })));
+        }
+      } else {
+        toast.error('Produto não encontrado');
+        router.push('/');
+      }
+    } catch (err) {
+      toast.error('Erro ao carregar produto');
+    }
+  };
 
   // Auto-generate slug from name
   useEffect(() => {
     setSlug(generateSlug(name));
   }, [name]);
 
-  const fetchPixOrders = async () => {
-    if (!token) return;
-    setLoadingPixOrders(true);
-    try {
-      const orders = await getAdminPendingPixOrders(token);
-      setPixOrders(orders);
-    } catch {
-      // non-admin users will get 403, silently ignore
-    } finally {
-      setLoadingPixOrders(false);
-    }
-  };
-
-
-  const handleApprove = async (orderId: string) => {
-    if (!token) return;
-    setPixActionId(orderId);
-    try {
-      await approvePixOrder(orderId, token);
-      toast.success('Pedido aprovado!');
-      setPixOrders((prev) => prev.filter((o) => o.id !== orderId));
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao aprovar pedido');
-    } finally {
-      setPixActionId(null);
-    }
-  };
-
-  const handleReject = async (orderId: string) => {
-    if (!token) return;
-    setPixActionId(orderId);
-    try {
-      await rejectPixOrder(orderId, token);
-      toast.success('Pedido rejeitado e estoque restaurado.');
-      setPixOrders((prev) => prev.filter((o) => o.id !== orderId));
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao rejeitar pedido');
-    } finally {
-      setPixActionId(null);
-    }
-  };
+  // Auto-generate slug from name only if it's new (skip for edit)
 
   if (!mounted || !isAuthenticated) {
     return (
@@ -317,8 +308,9 @@ export default function AdminPage() {
     isSubmittingRef.current = true;
     setIsLoading(true);
     try {
-      await createProduct(payload, token);
-      toast.success('Produto criado com sucesso!');
+      if (!productId) throw new Error('ID do produto ausente');
+      await updateProduct(productId, payload, token);
+      toast.success('Produto atualizado com sucesso!');
       // Reset form
       setName('');
       setDescription('');
@@ -328,8 +320,8 @@ export default function AdminPage() {
       setImages(['']);
       setVariants([{ id: uid(), sku: '', name: '', price: '', stock: '' }]);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Erro ao criar produto';
-      console.error('[Admin] Erro ao criar produto:', message);
+      const message = error instanceof Error ? error.message : 'Erro ao atualizar produto';
+      console.error('[Admin] Erro ao atualizar produto:', message);
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -352,111 +344,14 @@ export default function AdminPage() {
             </span>
           </div>
           <h1 className="font-serif text-4xl text-obsidian tracking-tight">
-            Novo Produto
+            Editar Produto
           </h1>
           <p className="text-graphite text-sm mt-1.5">
-            Preencha os dados abaixo para adicionar um produto ao catálogo.
+            Atualize os dados abaixo para alterar o produto no catálogo.
           </p>
         </div>
 
-        {/* ── Pix Pending Orders Panel ── */}
-        {(loadingPixOrders || pixOrders.length > 0) && (
-          <section className="mb-12 pb-12 border-b border-obsidian/10">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-graphite flex items-center gap-2">
-                <Clock size={14} className="text-amber-600" />
-                Pedidos Pix Pendentes
-                {pixOrders.length > 0 && (
-                  <span className="ml-1 px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-[10px] font-bold">
-                    {pixOrders.length}
-                  </span>
-                )}
-              </h2>
-              <button
-                onClick={fetchPixOrders}
-                className="text-xs text-graphite hover:text-obsidian transition-colors underline"
-              >
-                Atualizar
-              </button>
-            </div>
-
-            {loadingPixOrders ? (
-              <div className="flex items-center gap-2 text-graphite text-sm">
-                <Loader2 size={16} className="animate-spin" /> Carregando pedidos...
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {pixOrders.map((order: any) => (
-                  <div key={order.id} className="border border-amber-200 bg-amber-50/50 rounded-xl p-5 space-y-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-1 flex-1 min-w-0">
-                        <p className="text-xs font-bold text-obsidian uppercase tracking-wide">
-                          {order.payerName || '—'}
-                        </p>
-                        <p className="text-xs text-graphite font-mono">
-                          CPF: {order.payerCpf || '—'} · Tel: {order.payerPhone || '—'}
-                        </p>
-                        <p className="text-xs text-graphite/60 truncate">
-                          Pedido #{order.id?.slice(0, 8)}...
-                        </p>
-                        <p className="text-sm font-semibold text-obsidian">
-                          R$ {Number(order.total ?? 0).toFixed(2)}
-                        </p>
-                      </div>
-
-                      {order.pixReceiptUrl && (
-                        <button
-                          onClick={() => setPreviewUrl(previewUrl === order.pixReceiptUrl ? null : order.pixReceiptUrl)}
-                          className="flex items-center gap-1.5 px-3 py-2 text-xs bg-white border border-graphite/20 rounded-lg hover:border-obsidian transition-colors flex-shrink-0"
-                        >
-                          <Eye size={14} />
-                          Comprovante
-                        </button>
-                      )}
-                    </div>
-
-                    {previewUrl === order.pixReceiptUrl && (
-                      <div className="rounded-lg overflow-hidden border border-graphite/20">
-                        <img
-                          src={order.pixReceiptUrl}
-                          alt="Comprovante"
-                          className="w-full max-h-72 object-contain bg-white"
-                        />
-                      </div>
-                    )}
-
-                    <div className="flex gap-3 pt-1">
-                      <button
-                        onClick={() => handleApprove(order.id)}
-                        disabled={pixActionId === order.id}
-                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-60"
-                      >
-                        {pixActionId === order.id ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <CheckCheck size={14} />
-                        )}
-                        Aprovar
-                      </button>
-                      <button
-                        onClick={() => handleReject(order.id)}
-                        disabled={pixActionId === order.id}
-                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-red-300 hover:bg-red-50 text-red-600 text-xs font-semibold rounded-lg transition-colors disabled:opacity-60"
-                      >
-                        {pixActionId === order.id ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <XCircle size={14} />
-                        )}
-                        Rejeitar
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
+        {/* Pix Orders removed from edit page */}
 
         <form onSubmit={handleSubmit} className="space-y-12">
 
@@ -744,12 +639,12 @@ export default function AdminPage() {
               type="submit"
               size="lg"
               isLoading={isLoading}
-              loadingText="Criando produto..."
+              loadingText="Atualizando..."
               className="min-w-[220px]"
             >
               <span className="flex items-center gap-2">
                 <CheckCircle2 size={16} />
-                Publicar Produto
+                Salvar Alterações
               </span>
             </LoadingButton>
           </div>

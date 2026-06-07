@@ -123,6 +123,40 @@ export async function createProduct(data: unknown, token: string) {
   return res.json();
 }
 
+export async function updateProduct(id: string, data: unknown, token: string) {
+  const res = await fetch(`${API_BASE_URL}/products/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const errorMessage = errorData.detail || errorData.title || errorData.message || 'Falha ao atualizar produto';
+    throw new Error(errorMessage);
+  }
+
+  return res.json();
+}
+
+export async function deleteProduct(id: string, token: string) {
+  const res = await fetch(`${API_BASE_URL}/products/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const errorMessage = errorData.detail || errorData.title || errorData.message || 'Falha ao deletar produto';
+    throw new Error(errorMessage);
+  }
+}
+
 export async function getCloudinarySignature(token: string, folder: string = 'ecommerce/products') {
   const res = await fetch(`${API_BASE_URL}/upload/signature?folder=${encodeURIComponent(folder)}`, {
     method: 'GET',

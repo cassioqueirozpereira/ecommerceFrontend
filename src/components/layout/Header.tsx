@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { ShoppingBag, Search, User, Menu, X, ChevronDown, ChevronUp, ShieldAlert } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
@@ -15,6 +16,8 @@ import { NAV_CATEGORIES, FILTER_CATEGORIES, buildCategoryUrl, buildSortUrl } fro
 export function Header() {
   const { setIsOpen, items } = useCartStore();
   const { isAuthenticated, user, logout } = useAuthStore();
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams.get('category') || undefined;
   
   const [mounted, setMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -69,19 +72,19 @@ export function Header() {
               </button>
               <div className="absolute top-full left-0 mt-4 w-52 bg-ivory border border-graphite/10 shadow-xl rounded-md py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <Link 
-                  href={buildSortUrl('newest')}
+                  href={buildSortUrl('newest', currentCategory)}
                   className="block px-4 py-2.5 text-sm text-graphite hover:bg-graphite/5 hover:text-obsidian transition-colors"
                 >
                   Mais Recentes
                 </Link>
                 <Link 
-                  href={buildSortUrl('price_asc')}
+                  href={buildSortUrl('price_asc', currentCategory)}
                   className="block px-4 py-2.5 text-sm text-graphite hover:bg-graphite/5 hover:text-obsidian transition-colors"
                 >
                   Preço: Menor para Maior
                 </Link>
                 <Link 
-                  href={buildSortUrl('price_desc')}
+                  href={buildSortUrl('price_desc', currentCategory)}
                   className="block px-4 py-2.5 text-sm text-graphite hover:bg-graphite/5 hover:text-obsidian transition-colors"
                 >
                   Preço: Maior para Menor
@@ -254,17 +257,7 @@ export function Header() {
             
             <div className="flex-1 overflow-y-auto py-4">
               <div className="px-6 space-y-1">
-                {/* Admin Link */}
-                {isAdmin && (
-                  <Link 
-                    href="/admin" 
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-3 py-3 text-obsidian font-medium hover:text-blush transition-colors border-b border-graphite/5"
-                  >
-                    <ShieldAlert size={18} />
-                    <span>Publicar Produtos</span>
-                  </Link>
-                )}
+
 
                 {/* Categories Accordion */}
                 <div className="border-b border-graphite/5">
@@ -305,7 +298,7 @@ export function Header() {
                     <ul className="space-y-3 pl-4 border-l border-graphite/10 ml-2">
                       <li>
                         <Link 
-                          href={buildSortUrl('newest')}
+                          href={buildSortUrl('newest', currentCategory)}
                           onClick={() => setIsMenuOpen(false)}
                           className="block text-sm text-graphite hover:text-obsidian transition-colors"
                         >
@@ -314,7 +307,7 @@ export function Header() {
                       </li>
                       <li>
                         <Link 
-                          href={buildSortUrl('price_asc')}
+                          href={buildSortUrl('price_asc', currentCategory)}
                           onClick={() => setIsMenuOpen(false)}
                           className="block text-sm text-graphite hover:text-obsidian transition-colors"
                         >
@@ -323,7 +316,7 @@ export function Header() {
                       </li>
                       <li>
                         <Link 
-                          href={buildSortUrl('price_desc')}
+                          href={buildSortUrl('price_desc', currentCategory)}
                           onClick={() => setIsMenuOpen(false)}
                           className="block text-sm text-graphite hover:text-obsidian transition-colors"
                         >

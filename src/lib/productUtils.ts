@@ -11,9 +11,10 @@ export function buildCategoryUrl(newCat: string, sort?: string): string {
   return qs ? `/products?${qs}` : '/products';
 }
 
-export function buildSortUrl(newSort: string, category?: string): string {
+export function buildSortUrl(newSort: string, category?: string, search?: string): string {
   const params = new URLSearchParams();
   if (category) params.append('category', category);
+  if (search) params.append('search', search);
   params.append('sort', newSort);
   return `/products?${params.toString()}`;
 }

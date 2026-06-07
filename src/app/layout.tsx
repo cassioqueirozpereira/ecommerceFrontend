@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
@@ -47,7 +48,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans flex flex-col min-h-screen bg-ivory text-obsidian selection:bg-blush selection:text-ivory">
-        <Header />
+        <Suspense fallback={null}>
+          <Header />
+        </Suspense>
         <CartDrawer />
         <main className="flex-grow">{children}</main>
         <Footer />
