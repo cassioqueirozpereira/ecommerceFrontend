@@ -26,21 +26,27 @@ export function NewsletterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <input 
-        type="email" 
+    <form onSubmit={handleSubmit} className="flex gap-2" aria-label="Inscrição na newsletter">
+      <label htmlFor="newsletter-email" className="sr-only">
+        Seu endereço de e-mail
+      </label>
+      <input
+        id="newsletter-email"
+        type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter your email" 
+        placeholder="Seu e-mail"
         required
+        aria-label="Endereço de e-mail para newsletter"
         className="bg-transparent border border-ivory/20 px-4 py-2 text-sm rounded-md w-full focus:outline-none focus:border-blush"
       />
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         disabled={isLoading}
+        aria-label="Inscrever-se na newsletter"
         className="bg-ivory text-obsidian px-4 py-2 text-sm font-medium rounded-md hover:bg-ivory/90 transition-colors disabled:opacity-70 disabled:cursor-not-allowed min-w-[100px]"
       >
-        {isLoading ? '...' : 'Subscribe'}
+        {isLoading ? '...' : 'Inscrever'}
       </button>
     </form>
   );

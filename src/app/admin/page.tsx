@@ -599,7 +599,7 @@ export default function AdminPage() {
                     <div className="h-10 w-10 rounded-md overflow-hidden border border-graphite/10 flex-shrink-0 bg-graphite/5">
                       <img
                         src={img}
-                        alt=""
+                        alt={`Pré-visualização da imagem ${idx + 1}`}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).style.display = 'none';

@@ -19,9 +19,24 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: {
     template: "%s | VS BEAUTY",
-    default: "VS BEAUTY | Neo-Premium E-commerce",
+    default: "VS BEAUTY | Beleza e Cuidados Premium",
   },
-  description: "Experience the finest selection of luxury beauty products.",
+  description: "Descubra os melhores produtos de beleza, perfumes e cuidados com a pele. VS BEAUTY traz o auge do autocuidado para a sua rotina.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://ecommerce-vilmara.vercel.app'),
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    url: '/',
+    siteName: 'VS BEAUTY',
+    title: 'VS BEAUTY | Beleza e Cuidados Premium',
+    description: 'Descubra os melhores produtos de beleza, perfumes e cuidados com a pele. VS BEAUTY traz o auge do autocuidado para a sua rotina.',
+    images: [{ url: '/produto1.jpeg', width: 1200, height: 630, alt: 'VS BEAUTY - Beleza Premium' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'VS BEAUTY | Beleza e Cuidados Premium',
+    description: 'Descubra os melhores produtos de beleza, perfumes e cuidados com a pele.',
+  },
 };
 
 export default function RootLayout({

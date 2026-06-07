@@ -46,7 +46,7 @@ export default async function ProductDetailPage({ params }: Props) {
     offers: {
       '@type': 'Offer',
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/product/${product.slug}`,
-      priceCurrency: 'USD',
+      priceCurrency: 'BRL',
       price: product.basePrice,
       availability: product.variants?.some(v => v.stock > 0) 
         ? 'https://schema.org/InStock' 

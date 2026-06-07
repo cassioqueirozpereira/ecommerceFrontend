@@ -22,7 +22,7 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/80 to-transparent z-10" />
           <img 
             src="/produto1.jpeg" 
-            alt="Luxury abstract background" 
+            alt="Produtos de beleza e cuidados premium VS BEAUTY" 
             className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
           />
         </div>

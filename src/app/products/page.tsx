@@ -7,6 +7,11 @@ import { getProducts } from '@/lib/api';
 export const metadata = {
   title: 'Coleção | VS BEAUTY',
   description: 'Explore nossa coleção premium de produtos de beleza e perfumaria.',
+  openGraph: {
+    title: 'Coleção | VS BEAUTY',
+    description: 'Explore nossa coleção premium de produtos de beleza e perfumaria.',
+    type: 'website',
+  },
 };
 
 export default async function ProductsPage({
