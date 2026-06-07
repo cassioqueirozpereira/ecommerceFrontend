@@ -25,6 +25,7 @@ const CATEGORIES = [
   { id: 3, name: 'Cuidados com o corpo', slug: 'cuidados-com-o-corpo' },
   { id: 4, name: 'Cuidados com o cabelo', slug: 'cuidados-com-o-cabelo' },
   { id: 5, name: 'Acessórios', slug: 'acessorios' },
+  { id: 6, name: 'Kits e Presentes', slug: 'kits-e-presentes' },
 ];
 
 function generateSlug(name: string) {
