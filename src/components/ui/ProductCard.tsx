@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
@@ -48,7 +48,12 @@ export function ProductCard({
 }: ProductCardProps) {
   const router = useRouter();
   const { user, token } = useAuthStore();
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ROLE_ADMIN';
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -96,7 +101,7 @@ export function ProductCard({
   return (
     <Link href={`/product/${product.slug}`} className="group flex flex-col relative">
       {/* Admin Quick Actions */}
-      {isAdmin && (
+      {mounted && isAdmin && (
         <div className="absolute top-2 right-2 z-20 flex flex-col gap-2">
           {isConfirmingDelete ? (
             <div className="flex flex-col gap-1 bg-white p-1.5 rounded-md shadow-lg border border-red-200" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
@@ -181,11 +186,6 @@ export function ProductCard({
         </div>
         {showPrice && (
           <div className="flex flex-col items-end">
-            {product.promotionalPrice ? (
-              <span className="text-xs text-graphite/60 line-through mb-[-2px]">
-                {currency}{product.basePrice.toFixed(2)}
-              </span>
-            ) : null}
             <p className="font-serif flex-shrink-0 flex items-center gap-1.5 mt-0.5">
               <span>{currency}{(product.promotionalPrice || product.basePrice).toFixed(2)}</span>
               {!isOutOfStock && (
@@ -194,6 +194,11 @@ export function ProductCard({
                 </span>
               )}
             </p>
+            {product.promotionalPrice ? (
+              <span className="text-xs text-graphite/60 line-through mb-[-2px]">
+                {currency}{product.basePrice.toFixed(2)}
+              </span>
+            ) : null}
           </div>
         )}
       </div>

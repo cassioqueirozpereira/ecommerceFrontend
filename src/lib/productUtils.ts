@@ -19,17 +19,16 @@ export function buildSortUrl(newSort: string, category?: string, search?: string
   return `/products?${params.toString()}`;
 }
 
-/** Categories shown across nav and filter sidebar. Single source of truth. */
 export const NAV_CATEGORIES = [
   { label: 'Novidades', slug: '' },
-  { label: 'Perfumes', slug: 'perfume' },
+  { label: 'Perfumes', slug: 'perfumes' },
   { label: 'Cuidados com a pele', slug: 'cuidados-com-a-pele' },
   { label: 'Kits e Presentes', slug: 'kits-e-presentes' },
 ] as const;
 
 export const FILTER_CATEGORIES = [
   { label: 'Ver Tudo', slug: '' },
-  { label: 'Perfume', slug: 'perfume' },
+  { label: 'Perfumes', slug: 'perfumes' },
   { label: 'Cuidados com a pele', slug: 'cuidados-com-a-pele' },
   { label: 'Kits e Presentes', slug: 'kits-e-presentes' },
 ] as const;

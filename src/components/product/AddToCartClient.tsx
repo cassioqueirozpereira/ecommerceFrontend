@@ -35,7 +35,7 @@ export function AddToCartClient({ product }: Props) {
           R${selectedVariant ? selectedVariant.price.toFixed(2) : product.basePrice.toFixed(2)}
         </p>
         <p className="text-sm text-graphite mt-1">
-          Ou em até 10x de R${((selectedVariant?.price || product.basePrice) / 10).toFixed(2)} sem juros
+          Ou em até 12x
         </p>
       </div>
 

@@ -39,7 +39,7 @@ export default async function HomePage() {
             Descubra nossa nova coleção de fragrâncias exclusivas desenhadas para deixar uma marca inesquecível.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <Link href="/products?category=perfume" className="w-full sm:w-auto">
+            <Link href="/products?category=perfumes" className="w-full sm:w-auto">
               <Button variant="secondary" size="lg" className="w-full">
                 Explorar Fragrâncias
               </Button>
@@ -89,7 +89,7 @@ export default async function HomePage() {
       <section className="py-24 bg-graphite text-ivory">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[600px]">
-            <Link href="/products?category=perfume" className="group relative rounded-lg overflow-hidden h-[400px] md:h-auto">
+            <Link href="/products?category=perfumes" className="group relative rounded-lg overflow-hidden h-[400px] md:h-auto">
               <img 
                 src="/produto2.jpeg" 
                 alt="Perfumes" 
